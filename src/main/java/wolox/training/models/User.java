@@ -1,5 +1,10 @@
 package wolox.training.models;
 
+import static wolox.training.constants.PreconditionsMessages.CANNOT_BE_EMPTY;
+import static wolox.training.constants.PreconditionsMessages.CANNOT_BE_NULL;
+import static wolox.training.constants.PreconditionsMessages.UNBORN;
+
+import com.google.common.base.Preconditions;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,7 +22,8 @@ import wolox.training.exception.BookAlreadyOwnedException;
 
 @Entity
 @Table(name="users")
-public class User {
+public class
+User {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name="id")
@@ -43,6 +49,7 @@ public class User {
   }
 
   public void setUserId(long userId) {
+    Preconditions.checkNotNull(userId,CANNOT_BE_NULL,"UserID");
     this.userId = userId;
   }
 
@@ -51,6 +58,8 @@ public class User {
   }
 
   public void setUsername(String username) {
+    Preconditions.checkNotNull(username, CANNOT_BE_NULL, "Username");
+    Preconditions.checkArgument(!username.isEmpty(), CANNOT_BE_EMPTY, "Username");
     this.username = username;
   }
 
@@ -59,6 +68,8 @@ public class User {
   }
 
   public void setName(String name) {
+    Preconditions.checkNotNull(name, CANNOT_BE_NULL, "Name");
+    Preconditions.checkArgument(!name.isEmpty(), CANNOT_BE_EMPTY, "Name");
     this.name = name;
   }
 
@@ -67,6 +78,8 @@ public class User {
   }
 
   public void setBirthdate(LocalDate birthdate) {
+    Preconditions.checkNotNull(birthdate, CANNOT_BE_NULL, "Birthdate");
+    Preconditions.checkArgument(birthdate.isBefore(LocalDate.now()), UNBORN, birthdate.toString());
     this.birthdate = birthdate;
   }
 
@@ -75,6 +88,7 @@ public class User {
   }
 
   public void setBooks(List<Book> books) {
+    Preconditions.checkNotNull(books, CANNOT_BE_NULL, "Books");
     this.books = books;
   }
 
