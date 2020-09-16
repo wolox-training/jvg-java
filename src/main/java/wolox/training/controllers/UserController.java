@@ -1,5 +1,10 @@
 package wolox.training.controllers;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,10 +23,11 @@ import wolox.training.repositories.UserRepository;
 
 @RestController
 @RequestMapping("/users")
+@Api
 public class UserController {
 
   public static final String USER_ID_DOES_NOT_MATCH_WITH_ID_PROVIDED = "User id (%d) does not match with id provided (%d).";
-  public static final String USER_WAS_NOT_FOUND_ID = "User was not found. ID: %d";
+  public static final String USER_WAS_NOT_FOUND_ID = "User was not found. ID: %d.";
 
   @Autowired
   UserRepository userRepository;
@@ -69,7 +75,13 @@ public class UserController {
   }
 
   @PutMapping("/book/{userId}")
-  public User addBook(@RequestBody Book book, @PathVariable Long userId){
+  @ApiOperation(value="Giving a user id and a book, the book is added to the user's collection.", response = User.class)
+  @ApiResponses(value = {
+      @ApiResponse(code=200, message = "Successfully added the book."),
+      @ApiResponse(code=404, message = "The user/book doesn't exists in DB.")
+  })
+  public User addBook(@ApiParam(value="book to be added.",required = true) @RequestBody Book book,
+      @ApiParam(value= "user id to add the book.", required = true) @PathVariable Long userId){
     User user = findById(userId);
     bookController.findOne(userId);
     user.addBook(book);
