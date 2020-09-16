@@ -27,7 +27,8 @@ import wolox.training.repositories.UserRepository;
 public class UserController {
 
   public static final String USER_ID_DOES_NOT_MATCH_WITH_ID_PROVIDED = "User id (%d) does not match with id provided (%d).";
-  public static final String USER_WAS_NOT_FOUND_ID = "User was not found. ID: %d.";
+  public static final String USER_WAS_NOT_FOUND_ID = "User was not found. ID: %d";
+  public static final String USER_WAS_NOT_FOUND_USERNAME = "User was not found. Username: %s";
 
   @Autowired
   UserRepository userRepository;
@@ -49,7 +50,9 @@ public class UserController {
 
   @GetMapping("/username/{username}")
   public User findByUsername(@PathVariable String username){
-    return userRepository.findByUsername(username);
+    return userRepository.findByUsername(username)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+            String.format(USER_WAS_NOT_FOUND_USERNAME,username)));
   }
 
   @PostMapping
