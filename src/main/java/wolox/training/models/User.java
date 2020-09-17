@@ -1,5 +1,6 @@
 package wolox.training.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -75,7 +76,7 @@ public class User {
   }
 
   public void addBook(Book book){
-    if(this.books.contains(book)){
+    if(this.books.stream().anyMatch(bookInList -> bookInList.getId() == book.getId())){
       throw new BookAlreadyOwnedException(book.getTitle());
     }
     this.books.add(book);
