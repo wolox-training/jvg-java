@@ -86,7 +86,7 @@ public class UserController {
   public User addBook(@ApiParam(value="book to be added.",required = true) @RequestBody Book book,
       @ApiParam(value= "user id to add the book.", required = true) @PathVariable Long userId){
     User user = findById(userId);
-    bookController.findOne(userId);
+    bookController.findOne(book.getId());
     user.addBook(book);
     return userRepository.save(user);
   }
@@ -94,7 +94,7 @@ public class UserController {
   @DeleteMapping("/book/{userId}")
   public User deleteBook(@RequestBody Book book, @PathVariable Long userId){
     User user = findById(userId);
-    bookController.findOne(userId);
+    bookController.findOne(book.getId());
     user.deleteBook(book);
     return userRepository.save(user);
   }

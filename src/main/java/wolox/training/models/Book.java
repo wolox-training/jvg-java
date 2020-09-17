@@ -5,6 +5,7 @@ import static wolox.training.constants.PreconditionsMessages.CANNOT_BE_NULL;
 import static wolox.training.constants.PreconditionsMessages.PAGES_MUST_BE_POSITIVE_NUMBER;
 
 import com.google.common.base.Preconditions;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
@@ -37,6 +38,7 @@ public class Book {
   @Column(nullable = false)
   private String isbn;
   @ManyToMany(mappedBy = "books")
+  @JsonIgnoreProperties(value = "books")
   private List<User> users = new ArrayList<>();
 
   public Book() {

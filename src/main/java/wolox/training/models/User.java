@@ -7,6 +7,7 @@ import static wolox.training.constants.PreconditionsMessages.UNBORN;
 import com.google.common.base.Preconditions;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,6 +37,7 @@ public class User {
   private LocalDate birthdate;
   @ManyToMany()
   @ApiModelProperty(notes= "A book can be in more than one user book collection.")
+  @JsonIgnoreProperties(value = "users")
   private List<Book> books = new ArrayList<>();
 
   public User() {
@@ -90,7 +92,7 @@ public class User {
   }
 
   public void addBook(Book book){
-    if(this.books.contains(book)){
+    if(this.books.stream().anyMatch(bookInList -> bookInList.getId() == book.getId())){
       throw new BookAlreadyOwnedException(book.getTitle());
     }
     this.books.add(book);
