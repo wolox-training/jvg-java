@@ -1,9 +1,6 @@
 package wolox.training.exception;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(code = HttpStatus.UNPROCESSABLE_ENTITY, reason= "Book Id Mismatch.")
 public class BookIdMismatchException extends RuntimeException {
 
   public static final String BOOK_ID_DOESNT_MATCH = "Book Id doesn't match. Book ID: %d, Provided ID: %d";
