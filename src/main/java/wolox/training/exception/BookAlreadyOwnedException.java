@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(code = HttpStatus.OK, reason= "Book Already Owned.")
 public class BookAlreadyOwnedException extends RuntimeException{
 
-  public static final String BOOK_ID_DOESNT_MATCH = "Book already owned. Book Title: %s.";
+  public static final String BOOK_ALREADY_OWNED = "Book already owned. Book Title: %s.";
 
   public BookAlreadyOwnedException(String bookTitle){
-    super(String.format(BOOK_ID_DOESNT_MATCH, bookTitle));
+    super(String.format(BOOK_ALREADY_OWNED, bookTitle));
   }
 }
