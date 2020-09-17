@@ -28,11 +28,7 @@ public class User {
   private String name;
   @Column(nullable = false)
   private LocalDate birthdate;
-  @Column(nullable = false)
   @ManyToMany()
-  @JoinTable(name = "book",
-      joinColumns = @JoinColumn(name = "book_id", referencedColumnName = "id"),
-      inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
   private List<Book> books = new ArrayList<>();
 
   public User() {
