@@ -36,8 +36,7 @@ public class Book {
   private Integer pages;
   @Column(nullable = false)
   private String isbn;
-  @Column(nullable = false)
-  @ManyToMany()
+  @ManyToMany(mappedBy = "books")
   private List<User> users = new ArrayList<>();
 
   public Book() {
