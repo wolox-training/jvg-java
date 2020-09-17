@@ -33,7 +33,7 @@ public class Book {
   @Column(nullable = false)
   private String year;
   @Column(nullable = false)
-  private Integer page;
+  private Integer pages;
   @Column(nullable = false)
   private String isbn;
   @Column(nullable = false)
@@ -122,14 +122,14 @@ public class Book {
     this.year = year;
   }
 
-  public Integer getPage() {
-    return page;
+  public Integer getPages() {
+    return pages;
   }
 
-  public void setPage(Integer page) {
+  public void setPages(Integer page) {
     Preconditions.checkNotNull(page, CANNOT_BE_NULL, "Page");
     Preconditions.checkArgument(page > 0, PAGES_MUST_BE_POSITIVE_NUMBER, Integer.toString(page));
-    this.page = page;
+    this.pages = page;
   }
 
   public String getIsbn() {
