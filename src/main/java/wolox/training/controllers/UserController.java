@@ -77,7 +77,7 @@ public class UserController {
     return userRepository.save(user);
   }
 
-  @PutMapping("/book/{userId}")
+  @PutMapping("/{userId}/books/add")
   @ApiOperation(value="Giving a user id and a book, the book is added to the user's collection.", response = User.class)
   @ApiResponses(value = {
       @ApiResponse(code=200, message = "Successfully added the book."),
@@ -91,7 +91,7 @@ public class UserController {
     return userRepository.save(user);
   }
 
-  @DeleteMapping("/book/{userId}")
+  @DeleteMapping("/{userId}/books/delete")
   public User deleteBook(@RequestBody Book book, @PathVariable Long userId){
     User user = findById(userId);
     bookController.findOne(book.getId());
