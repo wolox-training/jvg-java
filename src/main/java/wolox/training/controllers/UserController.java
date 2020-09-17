@@ -71,7 +71,7 @@ public class UserController {
     return userRepository.save(user);
   }
 
-  @PutMapping("/book/{userId}")
+  @PutMapping("/{userId}/books/add")
   public User addBook(@RequestBody Book book, @PathVariable Long userId){
     User user = findById(userId);
     bookController.findOne(book.getId());
@@ -79,7 +79,7 @@ public class UserController {
     return userRepository.save(user);
   }
 
-  @DeleteMapping("/book/{userId}")
+  @DeleteMapping("/{userId}/books/delete")
   public User deleteBook(@RequestBody Book book, @PathVariable Long userId){
     User user = findById(userId);
     bookController.findOne(book.getId());
