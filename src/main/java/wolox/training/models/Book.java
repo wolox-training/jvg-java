@@ -25,7 +25,7 @@ public class Book {
   @Column(nullable = false)
   private String year;
   @Column(nullable = false)
-  private Integer page;
+  private Integer pages;
   @Column(nullable = false)
   private String isbn;
 
@@ -96,12 +96,12 @@ public class Book {
     this.year = year;
   }
 
-  public Integer getPage() {
-    return page;
+  public Integer getPages() {
+    return pages;
   }
 
-  public void setPage(Integer page) {
-    this.page = page;
+  public void setPages(Integer pages) {
+    this.pages = pages;
   }
 
   public String getIsbn() {
