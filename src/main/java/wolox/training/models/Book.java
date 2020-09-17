@@ -1,5 +1,6 @@
 package wolox.training.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
@@ -32,6 +33,7 @@ public class Book {
   @Column(nullable = false)
   private String isbn;
   @ManyToMany(mappedBy = "books")
+  @JsonIgnoreProperties(value = "books")
   private List<User> users = new ArrayList<>();
 
   public Book() {

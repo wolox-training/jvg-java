@@ -30,6 +30,7 @@ public class User {
   @Column(nullable = false)
   private LocalDate birthdate;
   @ManyToMany()
+  @JsonIgnoreProperties(value = "users")
   private List<Book> books = new ArrayList<>();
 
   public User() {
