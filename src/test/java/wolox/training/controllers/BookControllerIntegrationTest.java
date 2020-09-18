@@ -1,19 +1,23 @@
 package wolox.training.controllers;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.json.GsonJsonParser;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -28,6 +32,7 @@ import wolox.training.repositories.UserRepository;
 public class BookControllerIntegrationTest {
 
   private Book book;
+  private String jsonBook;
 
   @Autowired
   private MockMvc mvc;
@@ -38,27 +43,104 @@ public class BookControllerIntegrationTest {
   @MockBean
   private UserRepository userRepository;
 
+  @BeforeEach
+  public void beforeEachTest(){
+    book = new Book();
+    book.setAuthor("Author");
+    book.setImage("Image");
+    book.setTitle("Title");
+    book.setSubtitle("Subtitle");
+    book.setPublisher("Publisher");
+    book.setYear("Year");
+    book.setPages(20);
+    book.setIsbn("ISBN");
+    book.setGenre("Genre");
+    book.setId(1);
+    jsonBook = "{\"genre\": \"" + book.getGenre() + "\"," +
+        "\"author\": \"" + book.getAuthor() + "\"," +
+        "\"image\": \"" + book.getImage() + "\"," +
+        "\"title\": \"" + book.getTitle() + "\"," +
+        "\"subtitle\": \"" + book.getSubtitle() + "\"," +
+        "\"publisher\": \"" + book.getPublisher() + "\"," +
+        "\"year\": \"" + book.getYear() + "\"," +
+        "\"pages\": \"" + book.getPages() + "\"," +
+        "\"isbn\": \"" + book.getIsbn() + "\"," +
+        "\"id\": \"" + book.getId() + "\"" +
+        "}";
+  }
+
+  @Test
+  public void whenFindAll_ThenReturnBooksList() throws Exception {
+    List<Book> books = new ArrayList<>();
+    books.add(book);
+
+    given(bookRepository.findAll()).willReturn(books);
+
+    mvc.perform(get("/api/books/")
+    .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(1)))
+        .andExpect(jsonPath("$[0].isbn", is(book.getIsbn())));
+  }
+
   @Test
   public void whenFindBookById_ThenReturnAnExistingBook() throws Exception {
-    Long testId = 1L;
-    book = new Book();
-    book.setId(testId);
-    book.setTitle("Testing book");
 
-    given(bookRepository.findById(testId)).willReturn(java.util.Optional.ofNullable(book));
+    given(bookRepository.findById(book.getId())).willReturn(Optional.ofNullable(book));
 
-    mvc.perform(get("/api/books/1")
+    mvc.perform(get("/api/books/".concat(Long.toString(book.getId())))
         .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("title").value(book.getTitle()));
+        .andExpect(jsonPath("$.isbn").value(book.getIsbn()));
   }
 
   @Test
   public void whenFindBookByAuthorAndDoesntExists_ThenReturnNotFoundException() throws Exception {
-    given(bookRepository.findByAuthor("AuthorTest")).willReturn(Optional.empty());
+    String author = "unknown";
+    given(bookRepository.findByAuthor(author)).willReturn(Optional.empty());
 
-    mvc.perform(get("/api/books/author/AuthorTest").contentType(MediaType.APPLICATION_JSON))
+    mvc.perform(get("/api/books/author/".concat(author)).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
   }
+
+  @Test
+  public void whenCreateBook_ThenReturnBookCreated() throws  Exception {
+    given(bookRepository.save(any(Book.class))).willReturn(book);
+
+    mvc.perform(post("/api/books/")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(jsonBook))
+        .andExpect(status().isCreated());
+
+  }
+
+  @Test
+  public void whenDeleteBookThatDoesNotExists_ThenReturnNotFoundException() throws Exception {
+    given(bookRepository.findById(book.getId())).willReturn(Optional.empty());
+
+    mvc.perform(delete("/api/books/".concat(Long.toString(book.getId())))
+    .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  public void whenUpdateBookAndIdsDoesNotMatch_ThenReturnMismatchException() throws Exception {
+    mvc.perform(put("/api/books/2")
+    .contentType(MediaType.APPLICATION_JSON)
+    .content(jsonBook))
+        .andExpect(status().isUnprocessableEntity());
+  }
+
+  @Test
+  public void whenUpdateBook_ThenReturnUpdatedBook() throws Exception {
+    given(bookRepository.findById(book.getId())).willReturn(Optional.ofNullable(book));
+    given(bookRepository.save(any(Book.class))).willReturn(book);
+    mvc.perform(put("/api/books/".concat(Long.toString(book.getId())))
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(jsonBook))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.isbn").value(book.getIsbn()));
+  }
+
 
 }
