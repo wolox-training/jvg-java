@@ -70,7 +70,7 @@ public class BookControllerIntegrationTest {
   }
 
   @Test
-  public void whenFindAll_ThenReturnBooksList() throws Exception {
+  public void whenFindAll_thenReturnBooksList() throws Exception {
     List<Book> books = new ArrayList<>();
     books.add(book);
 
@@ -84,7 +84,7 @@ public class BookControllerIntegrationTest {
   }
 
   @Test
-  public void whenFindBookById_ThenReturnAnExistingBook() throws Exception {
+  public void whenFindBookById_thenReturnAnExistingBook() throws Exception {
 
     given(bookRepository.findById(book.getId())).willReturn(Optional.ofNullable(book));
 
@@ -95,7 +95,7 @@ public class BookControllerIntegrationTest {
   }
 
   @Test
-  public void whenFindBookByAuthorAndDoesntExists_ThenReturnNotFoundException() throws Exception {
+  public void whenFindBookByAuthorAndDoesntExists_thenReturnNotFoundException() throws Exception {
     String author = "unknown";
     given(bookRepository.findByAuthor(author)).willReturn(Optional.empty());
 
@@ -104,7 +104,7 @@ public class BookControllerIntegrationTest {
   }
 
   @Test
-  public void whenCreateBook_ThenReturnBookCreated() throws  Exception {
+  public void whenCreateBook_thenReturnBookCreated() throws  Exception {
     given(bookRepository.save(any(Book.class))).willReturn(book);
 
     mvc.perform(post("/api/books/")
@@ -115,7 +115,7 @@ public class BookControllerIntegrationTest {
   }
 
   @Test
-  public void whenDeleteBookThatDoesNotExists_ThenReturnNotFoundException() throws Exception {
+  public void whenDeleteBookThatDoesNotExists_thenReturnNotFoundException() throws Exception {
     given(bookRepository.findById(book.getId())).willReturn(Optional.empty());
 
     mvc.perform(delete("/api/books/".concat(Long.toString(book.getId())))
@@ -124,7 +124,7 @@ public class BookControllerIntegrationTest {
   }
 
   @Test
-  public void whenUpdateBookAndIdsDoesNotMatch_ThenReturnMismatchException() throws Exception {
+  public void whenUpdateBookAndIdsDoesNotMatch_thenReturnMismatchException() throws Exception {
     mvc.perform(put("/api/books/2")
     .contentType(MediaType.APPLICATION_JSON)
     .content(jsonBook))
@@ -132,7 +132,7 @@ public class BookControllerIntegrationTest {
   }
 
   @Test
-  public void whenUpdateBook_ThenReturnUpdatedBook() throws Exception {
+  public void whenUpdateBook_thenReturnUpdatedBook() throws Exception {
     given(bookRepository.findById(book.getId())).willReturn(Optional.ofNullable(book));
     given(bookRepository.save(any(Book.class))).willReturn(book);
     mvc.perform(put("/api/books/".concat(Long.toString(book.getId())))
