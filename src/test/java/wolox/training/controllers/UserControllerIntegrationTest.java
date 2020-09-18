@@ -18,7 +18,6 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -37,6 +36,8 @@ public class UserControllerIntegrationTest {
 
   private User user;
   private String jsonUser;
+  private Book book;
+  private String jsonBook;
 
   @Autowired
   private MockMvc mvc;
@@ -52,6 +53,28 @@ public class UserControllerIntegrationTest {
 
   @BeforeEach
   public void beforeEachTest(){
+    book = new Book();
+    book.setAuthor("Author");
+    book.setImage("Image");
+    book.setTitle("Title");
+    book.setSubtitle("Subtitle");
+    book.setPublisher("Publisher");
+    book.setYear("Year");
+    book.setPages(20);
+    book.setIsbn("ISBN");
+    book.setGenre("Genre");
+    book.setId(1);
+    jsonBook = "{\"genre\": \"" + book.getGenre() + "\"," +
+        "\"author\": \"" + book.getAuthor() + "\"," +
+        "\"image\": \"" + book.getImage() + "\"," +
+        "\"title\": \"" + book.getTitle() + "\"," +
+        "\"subtitle\": \"" + book.getSubtitle() + "\"," +
+        "\"publisher\": \"" + book.getPublisher() + "\"," +
+        "\"year\": \"" + book.getYear() + "\"," +
+        "\"pages\": \"" + book.getPages() + "\"," +
+        "\"isbn\": \"" + book.getIsbn() + "\"," +
+        "\"id\": \"" + book.getId() + "\"" +
+        "}";
     user = new User();
     user.setName("testUser");
     user.setUsername("testUsername");
@@ -127,33 +150,10 @@ public class UserControllerIntegrationTest {
 
   @Test
   public void whenAddBookToUser_thenReturnUserWithBook() throws Exception {
-    User userWithBook = user;
-    Book book = new Book();
-    book.setAuthor("Author");
-    book.setImage("Image");
-    book.setTitle("Title");
-    book.setSubtitle("Subtitle");
-    book.setPublisher("Publisher");
-    book.setYear("Year");
-    book.setPages(20);
-    book.setIsbn("ISBN");
-    book.setGenre("Genre");
-    book.setId(1);
-    String jsonBook = "{\"genre\": \"" + book.getGenre() + "\"," +
-        "\"author\": \"" + book.getAuthor() + "\"," +
-        "\"image\": \"" + book.getImage() + "\"," +
-        "\"title\": \"" + book.getTitle() + "\"," +
-        "\"subtitle\": \"" + book.getSubtitle() + "\"," +
-        "\"publisher\": \"" + book.getPublisher() + "\"," +
-        "\"year\": \"" + book.getYear() + "\"," +
-        "\"pages\": \"" + book.getPages() + "\"," +
-        "\"isbn\": \"" + book.getIsbn() + "\"," +
-        "\"id\": \"" + book.getId() + "\"" +
-        "}";
 
     given(userRepository.findById(user.getUserId())).willReturn(Optional.ofNullable(user));
     given(bookController.findOne(book.getId())).willReturn(book);
-    given(userRepository.save(any(User.class))).willReturn(userWithBook);
+    given(userRepository.save(any(User.class))).willReturn(user);
 
     mvc.perform(put("/api/users/".concat(Long.toString(user.getUserId())).concat("/books/add"))
     .contentType(MediaType.APPLICATION_JSON)
@@ -165,28 +165,6 @@ public class UserControllerIntegrationTest {
   @Test
   public void whenDeleteABookFromUserAndBookDoesNotExists_thenReturnNotFoundException()
       throws Exception {
-    Book book = new Book();
-    book.setAuthor("Author");
-    book.setImage("Image");
-    book.setTitle("Title");
-    book.setSubtitle("Subtitle");
-    book.setPublisher("Publisher");
-    book.setYear("Year");
-    book.setPages(20);
-    book.setIsbn("ISBN");
-    book.setGenre("Genre");
-    book.setId(1);
-    String jsonBook = "{\"genre\": \"" + book.getGenre() + "\"," +
-        "\"author\": \"" + book.getAuthor() + "\"," +
-        "\"image\": \"" + book.getImage() + "\"," +
-        "\"title\": \"" + book.getTitle() + "\"," +
-        "\"subtitle\": \"" + book.getSubtitle() + "\"," +
-        "\"publisher\": \"" + book.getPublisher() + "\"," +
-        "\"year\": \"" + book.getYear() + "\"," +
-        "\"pages\": \"" + book.getPages() + "\"," +
-        "\"isbn\": \"" + book.getIsbn() + "\"," +
-        "\"id\": \"" + book.getId() + "\"" +
-        "}";
     given(userRepository.findById(user.getUserId())).willReturn(Optional.ofNullable(user));
     given(bookController.findOne(book.getId())).willThrow(new BookNotFoundException(book.getId()));
 
