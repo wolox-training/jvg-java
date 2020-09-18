@@ -11,7 +11,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +23,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import wolox.training.BookFactory;
+import wolox.training.UserFactory;
 import wolox.training.exception.BookNotFoundException;
 import wolox.training.models.Book;
 import wolox.training.models.User;
@@ -38,6 +39,8 @@ public class UserControllerIntegrationTest {
   private String jsonUser;
   private Book book;
   private String jsonBook;
+  private final BookFactory bookFactory = new BookFactory();
+  private final UserFactory userFactory = new UserFactory();
 
   @Autowired
   private MockMvc mvc;
@@ -52,40 +55,12 @@ public class UserControllerIntegrationTest {
   private BookRepository bookRepository;
 
   @BeforeEach
-  public void beforeEachTest(){
-    book = new Book();
-    book.setAuthor("Author");
-    book.setImage("Image");
-    book.setTitle("Title");
-    book.setSubtitle("Subtitle");
-    book.setPublisher("Publisher");
-    book.setYear("Year");
-    book.setPages(20);
-    book.setIsbn("ISBN");
-    book.setGenre("Genre");
-    book.setId(1);
-    jsonBook = "{\"genre\": \"" + book.getGenre() + "\"," +
-        "\"author\": \"" + book.getAuthor() + "\"," +
-        "\"image\": \"" + book.getImage() + "\"," +
-        "\"title\": \"" + book.getTitle() + "\"," +
-        "\"subtitle\": \"" + book.getSubtitle() + "\"," +
-        "\"publisher\": \"" + book.getPublisher() + "\"," +
-        "\"year\": \"" + book.getYear() + "\"," +
-        "\"pages\": \"" + book.getPages() + "\"," +
-        "\"isbn\": \"" + book.getIsbn() + "\"," +
-        "\"id\": \"" + book.getId() + "\"" +
-        "}";
-    user = new User();
-    user.setName("testUser");
-    user.setUsername("testUsername");
+  void beforeEachTest(){
+    book = bookFactory.createTestBook();
+    jsonBook = bookFactory.getJsonBook(book);
+    user = userFactory.createTestUser();
     user.setUserId(1);
-    user.setBirthdate(LocalDate.of(1996,11,25));
-    jsonUser = "{" +
-        "\"name\": \"" + user.getName() + "\"," +
-        "\"username\": \"" + user.getUsername() + "\"," +
-        "\"birthdate\": \"" + user.getBirthdate() + "\"" +
-        "}";
-
+    jsonUser = userFactory.getJsonUser(user);
   }
 
   @Test
@@ -150,7 +125,8 @@ public class UserControllerIntegrationTest {
 
   @Test
   public void whenAddBookToUser_thenReturnUserWithBook() throws Exception {
-
+    book.setId(1);
+    jsonBook = bookFactory.getJsonBook(book);
     given(userRepository.findById(user.getUserId())).willReturn(Optional.ofNullable(user));
     given(bookController.findOne(book.getId())).willReturn(book);
     given(userRepository.save(any(User.class))).willReturn(user);
@@ -165,6 +141,8 @@ public class UserControllerIntegrationTest {
   @Test
   public void whenDeleteABookFromUserAndBookDoesNotExists_thenReturnNotFoundException()
       throws Exception {
+    book.setId(1);
+    jsonBook = bookFactory.getJsonBook(book);
     given(userRepository.findById(user.getUserId())).willReturn(Optional.ofNullable(user));
     given(bookController.findOne(book.getId())).willThrow(new BookNotFoundException(book.getId()));
 

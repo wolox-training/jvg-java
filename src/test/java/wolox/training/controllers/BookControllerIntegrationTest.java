@@ -23,6 +23,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import wolox.training.BookFactory;
 import wolox.training.models.Book;
 import wolox.training.repositories.BookRepository;
 import wolox.training.repositories.UserRepository;
@@ -33,6 +34,7 @@ public class BookControllerIntegrationTest {
 
   private Book book;
   private String jsonBook;
+  private final BookFactory bookFactory = new BookFactory();
 
   @Autowired
   private MockMvc mvc;
@@ -44,29 +46,10 @@ public class BookControllerIntegrationTest {
   private UserRepository userRepository;
 
   @BeforeEach
-  public void beforeEachTest(){
-    book = new Book();
-    book.setAuthor("Author");
-    book.setImage("Image");
-    book.setTitle("Title");
-    book.setSubtitle("Subtitle");
-    book.setPublisher("Publisher");
-    book.setYear("Year");
-    book.setPages(20);
-    book.setIsbn("ISBN");
-    book.setGenre("Genre");
+  void beforeEachTest(){
+    book = bookFactory.createTestBook();
     book.setId(1);
-    jsonBook = "{\"genre\": \"" + book.getGenre() + "\"," +
-        "\"author\": \"" + book.getAuthor() + "\"," +
-        "\"image\": \"" + book.getImage() + "\"," +
-        "\"title\": \"" + book.getTitle() + "\"," +
-        "\"subtitle\": \"" + book.getSubtitle() + "\"," +
-        "\"publisher\": \"" + book.getPublisher() + "\"," +
-        "\"year\": \"" + book.getYear() + "\"," +
-        "\"pages\": \"" + book.getPages() + "\"," +
-        "\"isbn\": \"" + book.getIsbn() + "\"," +
-        "\"id\": \"" + book.getId() + "\"" +
-        "}";
+    jsonBook = bookFactory.getJsonBook(book);
   }
 
   @Test
