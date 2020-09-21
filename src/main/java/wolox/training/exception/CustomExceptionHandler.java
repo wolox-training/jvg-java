@@ -11,15 +11,15 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
-  @ExceptionHandler(value = {BookIdMismatchException.class, BookNotFoundException.class})
-  protected ResponseEntity<Object> handleBooksExceptions(RuntimeException exception, WebRequest request){
-    HttpStatus httpStatus;
-    if(exception.getClass().equals(BookNotFoundException.class)){
-      httpStatus = HttpStatus.NOT_FOUND;
-    } else {
-      httpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
-    }
+  @ExceptionHandler(value = {BookNotFoundException.class})
+  protected ResponseEntity<Object> handleBookNotFoundException(RuntimeException exception, WebRequest request){
     return handleExceptionInternal(exception, exception.getMessage(), new HttpHeaders(),
-        httpStatus, request);
+        HttpStatus.NOT_FOUND, request);
+  }
+
+  @ExceptionHandler(value = {BookIdMismatchException.class})
+  protected ResponseEntity<Object> handleBookIdMismatchException(RuntimeException exception, WebRequest request){
+    return handleExceptionInternal(exception, exception.getMessage(), new HttpHeaders(),
+        HttpStatus.UNPROCESSABLE_ENTITY, request);
   }
 }
