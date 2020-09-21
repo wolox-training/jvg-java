@@ -1,10 +1,14 @@
 package wolox.training.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 
 @Entity
 public class Book {
@@ -28,6 +32,9 @@ public class Book {
   private Integer pages;
   @Column(nullable = false)
   private String isbn;
+  @ManyToMany(mappedBy = "books")
+  @JsonIgnoreProperties(value = "books")
+  private List<User> users = new ArrayList<>();
 
   public Book() {
   }
@@ -110,5 +117,13 @@ public class Book {
 
   public void setIsbn(String isbn) {
     this.isbn = isbn;
+  }
+
+  public List<User> getUsers() {
+    return users;
+  }
+
+  public void setUsers(List<User> users) {
+    this.users = users;
   }
 }

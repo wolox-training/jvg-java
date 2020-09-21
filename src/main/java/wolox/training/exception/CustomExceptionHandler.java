@@ -17,9 +17,10 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         HttpStatus.NOT_FOUND, request);
   }
 
-  @ExceptionHandler(value = {BookIdMismatchException.class})
-  protected ResponseEntity<Object> handleBookIdMismatchException(RuntimeException exception, WebRequest request){
+  @ExceptionHandler(value = {BookIdMismatchException.class, BookAlreadyOwnedException.class})
+  protected ResponseEntity<Object> handleUnprocessableEntityBookException(RuntimeException exception, WebRequest request){
     return handleExceptionInternal(exception, exception.getMessage(), new HttpHeaders(),
         HttpStatus.UNPROCESSABLE_ENTITY, request);
   }
+
 }
