@@ -1,10 +1,10 @@
 package wolox.training.exception;
 
 
-public class BookNotFoundException extends RuntimeException {
+import static wolox.training.constants.ExceptionConstants.BOOK_WAS_NOT_FOUND;
+import static wolox.training.constants.ExceptionConstants.BOOK_WAS_NOT_FOUND_AUTHOR;
 
-  public static final String BOOK_WAS_NOT_FOUND = "Book was not found. ID: %d";
-  public static final String BOOK_WAS_NOT_FOUND_AUTHOR = "Book was not found. Author: %s";
+public class BookNotFoundException extends RuntimeException {
 
   public BookNotFoundException(Long id) {
     super(String.format(BOOK_WAS_NOT_FOUND,id));
