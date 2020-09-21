@@ -12,7 +12,7 @@ public class BookFactory {
     book.setTitle("Title");
     book.setSubtitle("Subtitle");
     book.setPublisher("Publisher");
-    book.setYear("Year");
+    book.setYear("2020");
     book.setPages(20);
     book.setIsbn("ISBN");
     book.setGenre("Genre");

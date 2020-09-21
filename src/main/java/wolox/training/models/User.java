@@ -1,8 +1,8 @@
 package wolox.training.models;
 
-import static wolox.training.constants.PreconditionsMessages.CANNOT_BE_EMPTY;
-import static wolox.training.constants.PreconditionsMessages.CANNOT_BE_NULL;
-import static wolox.training.constants.PreconditionsMessages.UNBORN;
+import static wolox.training.constants.PreconditionsConstants.CANNOT_BE_EMPTY;
+import static wolox.training.constants.PreconditionsConstants.CANNOT_BE_NULL;
+import static wolox.training.constants.PreconditionsConstants.UNBORN;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Preconditions;
