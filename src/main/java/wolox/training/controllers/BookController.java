@@ -34,9 +34,10 @@ public class BookController {
     return bookRepository.findAll();
   }
 
-  @GetMapping("/author/{bookAuthor}")
+  @GetMapping("/author/{author}")
   public Book findByAuthor(@PathVariable String author){
-    return bookRepository.findByAuthor(author);
+    return bookRepository.findByAuthor(author)
+        .orElseThrow(() -> new BookNotFoundException(author));
   }
 
   @GetMapping("/{id}")

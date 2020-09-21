@@ -1,16 +1,16 @@
 package wolox.training.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import wolox.training.exception.BookAlreadyOwnedException;
@@ -28,11 +28,8 @@ public class User {
   private String name;
   @Column(nullable = false)
   private LocalDate birthdate;
-  @Column(nullable = false)
   @ManyToMany()
-  @JoinTable(name = "book",
-      joinColumns = @JoinColumn(name = "book_id", referencedColumnName = "id"),
-      inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
+  @JsonIgnoreProperties(value = "users")
   private List<Book> books = new ArrayList<>();
 
   public User() {
@@ -79,13 +76,15 @@ public class User {
   }
 
   public void addBook(Book book){
-    if(this.books.contains(book)){
+    if(this.books.stream().anyMatch(bookInList -> bookInList.getId() == book.getId())){
       throw new BookAlreadyOwnedException(book.getTitle());
     }
     this.books.add(book);
   }
 
   public void deleteBook(Book book){
-    this.books.remove(book);
+    this.setBooks(this.books.stream()
+        .filter(bookInList -> bookInList.getId() != book.getId())
+        .collect(Collectors.toList()));
   }
 }
