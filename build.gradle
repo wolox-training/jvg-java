@@ -24,6 +24,7 @@ dependencies {
 	compile('org.springframework.plugin:spring-plugin-core:1.2.0.RELEASE')
 	compile('com.google.guava:guava:27.0-jre')
 	compile('org.springframework.boot:spring-boot-starter-security')
+	compile('org.springframework.security:spring-security-test')
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}

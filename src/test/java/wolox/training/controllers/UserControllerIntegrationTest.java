@@ -21,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import wolox.training.BookFactory;
@@ -30,6 +32,7 @@ import wolox.training.models.Book;
 import wolox.training.models.User;
 import wolox.training.repositories.BookRepository;
 import wolox.training.repositories.UserRepository;
+import wolox.training.security.CustomAuthenticationProvider;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(UserController.class)
@@ -54,6 +57,13 @@ public class UserControllerIntegrationTest {
   @MockBean
   private BookRepository bookRepository;
 
+  @MockBean
+  private CustomAuthenticationProvider customAuthenticationProvider;
+
+  @MockBean
+  private PasswordEncoder passwordEncoder;
+
+
   @BeforeEach
   void beforeEachTest(){
     book = bookFactory.createTestBook();
@@ -63,6 +73,7 @@ public class UserControllerIntegrationTest {
     jsonUser = userFactory.getJsonUser(user);
   }
 
+  @WithMockUser(value="anUser")
   @Test
   public void whenGetAllUsers_thenReturnUsersList() throws Exception {
     List<User> users = new ArrayList<>();
@@ -76,6 +87,7 @@ public class UserControllerIntegrationTest {
         .andExpect(jsonPath("$[0].username", is(user.getUsername())));
   }
 
+  @WithMockUser(value="anUser")
   @Test
   public void whenFindUserByIdAndUserDoesNotExists_thenReturnNotFoundException() throws Exception {
     given(userRepository.findById(user.getUserId())).willReturn(Optional.empty());
@@ -85,6 +97,7 @@ public class UserControllerIntegrationTest {
         .andExpect(status().isNotFound());
   }
 
+  @WithMockUser(value="anUser")
   @Test
   public void whenFindUserByUsername_thenReturnUser() throws Exception {
     given(userRepository.findByUsername(user.getUsername())).willReturn(Optional.ofNullable(user));
@@ -99,13 +112,14 @@ public class UserControllerIntegrationTest {
   public void whenCreateUser_thenReturnUser() throws Exception {
     given(userRepository.save(any(User.class))).willReturn(user);
 
-    mvc.perform(post("/api/users/")
+    mvc.perform(post("/api/users")
     .contentType(MediaType.APPLICATION_JSON)
     .content(jsonUser))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.username", is(user.getUsername())));
   }
 
+  @WithMockUser(value="anUser")
   @Test
   public void  whenDeleteUserAndDoesNotExists_thenReturnNotFoundException() throws Exception {
     given(userRepository.findById(user.getUserId())).willReturn(Optional.empty());
@@ -115,6 +129,7 @@ public class UserControllerIntegrationTest {
         .andExpect(status().isNotFound());
   }
 
+  @WithMockUser(value="anUser")
   @Test
   public void whenUpdateUserAndIdMismatch_thenReturnIdMismatchException() throws Exception {
     mvc.perform(put("/api/users/2")
@@ -123,6 +138,7 @@ public class UserControllerIntegrationTest {
         .andExpect(status().isPreconditionFailed());
   }
 
+  @WithMockUser(value="anUser")
   @Test
   public void whenAddBookToUser_thenReturnUserWithBook() throws Exception {
     book.setId(1);
@@ -138,6 +154,7 @@ public class UserControllerIntegrationTest {
         .andExpect(jsonPath("$.books[0].id", is(1)));
   }
 
+  @WithMockUser(value="anUser")
   @Test
   public void whenDeleteABookFromUserAndBookDoesNotExists_thenReturnNotFoundException()
       throws Exception {
@@ -150,5 +167,12 @@ public class UserControllerIntegrationTest {
         .contentType(MediaType.APPLICATION_JSON)
         .content(jsonBook))
         .andExpect(status().isNotFound());
+  }
+
+  @Test
+  public void whenFindByIdWithNoAuth_thenReturnUnauthorizedException() throws Exception {
+    mvc.perform(get("/api/users/".concat(Long.toString(user.getUserId())))
+        .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnauthorized());
   }
 }

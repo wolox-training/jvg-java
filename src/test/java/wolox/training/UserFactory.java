@@ -12,6 +12,7 @@ public class UserFactory {
     user.setName("testUser");
     user.setUsername("testUsername");
     user.setBirthdate(LocalDate.of(1996,11,25));
+    user.setPassword("testPassword");
     return user;
   }
 
