@@ -2,7 +2,7 @@ package wolox.training.models;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static wolox.training.constants.PreconditionsMessages.UNBORN;
+import static wolox.training.constants.PreconditionsConstants.UNBORN;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
