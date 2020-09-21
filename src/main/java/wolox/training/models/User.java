@@ -4,6 +4,7 @@ import static wolox.training.constants.PreconditionsMessages.CANNOT_BE_EMPTY;
 import static wolox.training.constants.PreconditionsMessages.CANNOT_BE_NULL;
 import static wolox.training.constants.PreconditionsMessages.UNBORN;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Preconditions;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -36,6 +37,9 @@ public class User {
   private String name;
   @Column(nullable = false)
   private LocalDate birthdate;
+  @JsonIgnore
+  @Column(nullable = false)
+  private String password;
   @ManyToMany()
   @ApiModelProperty(notes= "A book can be in more than one user book collection.")
   @JsonIgnoreProperties(value = "users")
@@ -103,5 +107,14 @@ public class User {
     this.setBooks(this.books.stream()
         .filter(bookInList -> bookInList.getId() != book.getId())
         .collect(Collectors.toList()));
+  }
+
+
+  public String getPassword() {
+    return password;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
   }
 }
