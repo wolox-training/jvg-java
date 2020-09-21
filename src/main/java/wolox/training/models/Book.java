@@ -7,6 +7,7 @@ import static wolox.training.constants.PreconditionsConstants.PAGES_MUST_BE_POSI
 
 import com.google.common.base.Preconditions;
 import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
@@ -38,8 +39,8 @@ public class Book {
   private Integer page;
   @Column(nullable = false)
   private String isbn;
-  @Column(nullable = false)
-  @ManyToMany()
+  @ManyToMany(mappedBy = "books")
+  @JsonIgnoreProperties(value = "books")
   private List<User> users = new ArrayList<>();
 
   public Book() {
