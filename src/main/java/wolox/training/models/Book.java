@@ -1,11 +1,13 @@
 package wolox.training.models;
 
-import static wolox.training.constants.PreconditionsMessages.CANNOT_BE_EMPTY;
-import static wolox.training.constants.PreconditionsMessages.CANNOT_BE_NULL;
-import static wolox.training.constants.PreconditionsMessages.PAGES_MUST_BE_POSITIVE_NUMBER;
+import static wolox.training.constants.PreconditionsConstants.CANNOT_BE_EMPTY;
+import static wolox.training.constants.PreconditionsConstants.CANNOT_BE_NULL;
+import static wolox.training.constants.PreconditionsConstants.INVALID_YEAR;
+import static wolox.training.constants.PreconditionsConstants.PAGES_MUST_BE_POSITIVE_NUMBER;
 
 import com.google.common.base.Preconditions;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
@@ -58,8 +60,6 @@ public class Book {
   }
 
   public void setGenre(String genre) {
-    Preconditions.checkNotNull(genre, CANNOT_BE_NULL, "Genre");
-    Preconditions.checkArgument(!genre.isEmpty(), CANNOT_BE_EMPTY, "Genre");
     this.genre = genre;
   }
 
@@ -120,6 +120,7 @@ public class Book {
   public void setYear(String year) {
     Preconditions.checkNotNull(year, CANNOT_BE_NULL, "Year");
     Preconditions.checkArgument(!year.isEmpty(), CANNOT_BE_EMPTY, "Year");
+    Preconditions.checkArgument(Integer.parseInt(year) <= LocalDate.now().getYear() && Integer.parseInt(year) > 0, INVALID_YEAR);
     this.year = year;
   }
 
