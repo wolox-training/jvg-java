@@ -1,5 +1,7 @@
 package wolox.training.security;
 
+import static wolox.training.constants.ExceptionConstants.INVALID_CREDENTIALS;
+
 import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -15,7 +17,6 @@ import wolox.training.repositories.UserRepository;
 @Component
 public class CustomAuthenticationProvider implements AuthenticationProvider {
 
-  public static final String INVALID_CREDENTIALS = "Invalid credentials";
   @Autowired
   private PasswordEncoder passwordEncoder;
 
