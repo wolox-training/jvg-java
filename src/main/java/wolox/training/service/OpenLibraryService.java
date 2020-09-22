@@ -29,11 +29,11 @@ public class OpenLibraryService {
     book.setIsbn(isbn);
     book.setTitle(jsonBook.get("title").asText());
     book.setSubtitle(jsonBook.get("subtitle").asText());
-    book.setImage(jsonBook.get("cover").get("medium").asText());
-    book.setPublisher(jsonBook.get("publishers").get(0).get("name").asText()); //LF method parse the array to the string
+    book.setImage(jsonBook.get("cover").get("small").asText());
+    book.setPublisher(getJsonNodeArrayNamesToString(jsonBook.get("publishers"))); //LF method parse the array to the string
     book.setYear(jsonBook.get("publish_date").asText());
     book.setPages(jsonBook.get("number_of_pages").asInt());
-    book.setAuthor(jsonBook.get("authors").get(0).get("name").asText());
+    book.setAuthor(getJsonNodeArrayNamesToString(jsonBook.get("authors")));
 
     return Optional.of(book);
   }
@@ -49,5 +49,19 @@ public class OpenLibraryService {
     return apiResponse.hasBody() ?
         objectMapper.readTree(apiResponse.getBody()).get("ISBN:".concat(isbn)) :
         objectMapper.createObjectNode();
+  }
+
+  private String getJsonNodeArrayNamesToString(JsonNode jsonArray){
+    String result = "";
+    if(jsonArray.isEmpty()){
+      return result;
+    }
+    StringBuilder resultBuilder = new StringBuilder();
+    for (JsonNode node : jsonArray) {
+      resultBuilder.append(node.get("name").asText());
+      resultBuilder.append(",");
+    }
+    result = resultBuilder.toString();
+    return result.isEmpty() ? result : result.substring(0, resultBuilder.toString().length() -1);
   }
 }
