@@ -1,7 +1,12 @@
 package wolox.training.controllers;
 
+import static wolox.training.constants.ExceptionConstants.BOOK_WAS_NOT_FOUND_ISBN;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +22,7 @@ import wolox.training.exception.BookIdMismatchException;
 import wolox.training.exception.BookNotFoundException;
 import wolox.training.models.Book;
 import wolox.training.repositories.BookRepository;
+import wolox.training.service.OpenLibraryService;
 
 @RestController
 @RequestMapping("/api/books")
@@ -24,6 +30,9 @@ public class BookController {
 
   @Autowired
   private BookRepository bookRepository;
+
+  @Autowired
+  private OpenLibraryService openLibraryService;
 
   @GetMapping("/greeting")
   public String greeting(@RequestParam(name="name", required=false, defaultValue="World") String name, Model model) {
@@ -46,6 +55,21 @@ public class BookController {
   public Book findOne(@PathVariable Long id){
     return bookRepository.findById(id)
         .orElseThrow(() -> new BookNotFoundException(id));
+  }
+
+  @GetMapping("/isbn/{isbn}")
+  public ResponseEntity<Book> findByISBN(@PathVariable String isbn){
+    Optional<Book> optBook = bookRepository.findByIsbn(isbn);
+    if(optBook.isPresent()){
+      return new ResponseEntity<>(optBook.get(),HttpStatus.OK);
+    }
+    try {
+      Book book = openLibraryService.bookInfo(isbn).orElseThrow(() ->
+          new BookNotFoundException(String.format(BOOK_WAS_NOT_FOUND_ISBN,isbn)));
+      return new ResponseEntity<>(bookRepository.save(book), HttpStatus.CREATED);
+    } catch (JsonProcessingException e) {
+      throw new BookNotFoundException(String.format(BOOK_WAS_NOT_FOUND_ISBN,isbn));
+    }
   }
 
   @PostMapping

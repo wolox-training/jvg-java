@@ -3,6 +3,7 @@ package wolox.training.constants;
 public class ExceptionConstants {
 
   public static final String BOOK_WAS_NOT_FOUND = "Book was not found. ID: %d";
+  public static final String BOOK_WAS_NOT_FOUND_ISBN = "Book was not found. ISBN: %s";
   public static final String BOOK_WAS_NOT_FOUND_AUTHOR = "Book was not found. Author: %s";
   public static final String BOOK_ID_DOESNT_MATCH = "Book Id doesn't match. Book ID: %d, Provided ID: %d";
   public static final String BOOK_ALREADY_OWNED = "Book already owned. Book Title: %s.";
