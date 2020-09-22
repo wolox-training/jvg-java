@@ -5,6 +5,7 @@ import static wolox.training.constants.PreconditionsConstants.CANNOT_BE_NULL;
 import static wolox.training.constants.PreconditionsConstants.UNBORN;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Preconditions;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -31,13 +32,13 @@ public class User {
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name="id")
   private long userId;
-  @Column(nullable = false)
+  @Column(nullable = false, unique = true)
   private String username;
   @Column(nullable = false)
   private String name;
   @Column(nullable = false)
   private LocalDate birthdate;
-  @JsonIgnore
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   @Column(nullable = false)
   private String password;
   @ManyToMany()
