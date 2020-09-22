@@ -5,6 +5,7 @@ import static wolox.training.constants.PreconditionsConstants.CANNOT_BE_NULL;
 import static wolox.training.constants.PreconditionsConstants.UNBORN;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Preconditions;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -37,7 +38,7 @@ public class User {
   private String name;
   @Column(nullable = false)
   private LocalDate birthdate;
-  @JsonIgnore
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   @Column(nullable = false)
   private String password;
   @ManyToMany()
