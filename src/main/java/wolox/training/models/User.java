@@ -1,5 +1,10 @@
 package wolox.training.models;
 
+import static wolox.training.constants.PreconditionsConstants.CANNOT_BE_EMPTY;
+import static wolox.training.constants.PreconditionsConstants.CANNOT_BE_NULL;
+import static wolox.training.constants.PreconditionsConstants.UNBORN;
+
+import com.google.common.base.Preconditions;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -44,6 +49,7 @@ public class User {
   }
 
   public void setUserId(long userId) {
+    Preconditions.checkNotNull(userId,CANNOT_BE_NULL,"UserID");
     this.userId = userId;
   }
 
@@ -52,6 +58,8 @@ public class User {
   }
 
   public void setUsername(String username) {
+    Preconditions.checkNotNull(username, CANNOT_BE_NULL, "Username");
+    Preconditions.checkArgument(!username.isEmpty(), CANNOT_BE_EMPTY, "Username");
     this.username = username;
   }
 
@@ -60,6 +68,8 @@ public class User {
   }
 
   public void setName(String name) {
+    Preconditions.checkNotNull(name, CANNOT_BE_NULL, "Name");
+    Preconditions.checkArgument(!name.isEmpty(), CANNOT_BE_EMPTY, "Name");
     this.name = name;
   }
 
@@ -68,6 +78,8 @@ public class User {
   }
 
   public void setBirthdate(LocalDate birthdate) {
+    Preconditions.checkNotNull(birthdate, CANNOT_BE_NULL, "Birthdate");
+    Preconditions.checkArgument(birthdate.isBefore(LocalDate.now()), UNBORN, birthdate.toString());
     this.birthdate = birthdate;
   }
 
@@ -76,6 +88,7 @@ public class User {
   }
 
   public void setBooks(List<Book> books) {
+    Preconditions.checkNotNull(books, CANNOT_BE_NULL, "Books");
     this.books = books;
   }
 

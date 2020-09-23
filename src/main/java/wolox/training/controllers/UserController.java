@@ -1,5 +1,9 @@
 package wolox.training.controllers;
 
+import static wolox.training.constants.ExceptionConstants.USER_ID_DOES_NOT_MATCH_WITH_ID_PROVIDED;
+import static wolox.training.constants.ExceptionConstants.USER_WAS_NOT_FOUND_ID;
+import static wolox.training.constants.ExceptionConstants.USER_WAS_NOT_FOUND_USERNAME;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -25,10 +29,6 @@ import wolox.training.repositories.UserRepository;
 @RequestMapping("/users")
 @Api
 public class UserController {
-
-  public static final String USER_ID_DOES_NOT_MATCH_WITH_ID_PROVIDED = "User id (%d) does not match with id provided (%d).";
-  public static final String USER_WAS_NOT_FOUND_ID = "User was not found. ID: %d";
-  public static final String USER_WAS_NOT_FOUND_USERNAME = "User was not found. Username: %s";
 
   @Autowired
   UserRepository userRepository;
