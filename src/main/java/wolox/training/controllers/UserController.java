@@ -51,8 +51,12 @@ public class UserController {
   }
 
   @GetMapping
-  public Iterable<User> getAll(){
-    return userRepository.findAll();
+  public Iterable<User> getAll(
+      @RequestParam(required=false) String birthdateStr,
+      @RequestParam(required=false, defaultValue = "") String name,
+      @RequestParam(required=false, defaultValue = "") String username){
+    LocalDate birthdate = birthdateStr == null ? null : LocalDate.parse(birthdateStr);
+    return userRepository.findAllByFilters(birthdate, name, username);
   }
 
   @GetMapping("/{userId}")

@@ -20,4 +20,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
       @Param("endDate") LocalDate endDate,
       @Param("name") String name);
 
+  @Query("SELECT u FROM User u"
+      + " WHERE (cast(:birthdate as date) is null OR u.birthdate = :birthdate)"
+      + " AND (:name is null OR UPPER(u.name) LIKE UPPER(CONCAT('%',:name,'%')))"
+      + " AND (:username is null OR UPPER(u.username) LIKE UPPER(CONCAT('%',:username,'%')))")
+  Iterable<User> findAllByFilters(
+      @Param("birthdate") LocalDate birthdate,
+      @Param("name") String name,
+      @Param("username") String username);
 }
