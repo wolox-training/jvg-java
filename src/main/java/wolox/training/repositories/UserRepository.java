@@ -14,7 +14,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
   @Query("SELECT u FROM User u"
       + " WHERE (cast(:startDate as date) is null OR u.birthdate >= :startDate)"
       + " AND (cast(:endDate as date) is null OR u.birthdate <= :endDate)"
-      + " AND (:name is null OR UPPER(u.name) LIKE UPPER(CONCAT('%',:name,'%')))")
+      + " AND (:name = '' OR UPPER(u.name) LIKE UPPER(CONCAT('%',:name,'%')))")
   Iterable<User> findAllByBirthdateBetweenAndNameContainingIgnoreCase(
       @Param("startDate") LocalDate startDate,
       @Param("endDate") LocalDate endDate,
