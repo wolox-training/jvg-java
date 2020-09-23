@@ -128,10 +128,10 @@ public class Book {
     return pages;
   }
 
-  public void setPages(Integer page) {
-    Preconditions.checkNotNull(page, CANNOT_BE_NULL, "Page");
-    Preconditions.checkArgument(page > 0, PAGES_MUST_BE_POSITIVE_NUMBER, Integer.toString(page));
-    this.pages = page;
+  public void setPages(Integer pages) {
+    Preconditions.checkNotNull(pages, CANNOT_BE_NULL, "Page");
+    Preconditions.checkArgument(pages > 0, PAGES_MUST_BE_POSITIVE_NUMBER, Integer.toString(pages));
+    this.pages = pages;
   }
 
   public String getIsbn() {
