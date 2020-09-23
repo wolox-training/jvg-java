@@ -50,6 +50,8 @@ public class CustomAuthenticationProviderTest {
     Authentication authResponse = customAuthenticationProvider.authenticate(authentication);
 
     assertTrue(authResponse.isAuthenticated());
+    verify(userRepository,times(1)).findByUsername(authentication.getName());
+    verify(passwordEncoder,times(1)).matches(authentication.getCredentials().toString(), user.getPassword());
   }
 
   @Test
