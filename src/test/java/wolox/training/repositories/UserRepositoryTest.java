@@ -72,4 +72,24 @@ public class UserRepositoryTest {
     assertThat(users.iterator().hasNext()).isFalse();
   }
 
+  @Test
+  public void whenFindAllByBirthdateBetweenAndNameContainingIgnoreCaseWithNullDate_thenReturnUsers(){
+    entityManager.persist(user);
+
+    Iterable<User> users = userRepository.findAllByBirthdateBetweenAndNameContainingIgnoreCase(
+        user.getBirthdate(), null, user.getName());
+
+    assertThat(users.iterator().next().getName()).isEqualTo(user.getName());
+  }
+
+  @Test
+  public void whenFindAllByBirthdateBetweenAndNameContainingIgnoreCaseWithEmptyName_thenReturnUsers(){
+    entityManager.persist(user);
+
+    Iterable<User> users = userRepository.findAllByBirthdateBetweenAndNameContainingIgnoreCase(
+        user.getBirthdate(), null, "");
+
+    assertThat(users.iterator().next().getName()).isEqualTo(user.getName());
+  }
+
 }
