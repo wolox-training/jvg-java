@@ -124,11 +124,11 @@ public class Book {
     this.year = year;
   }
 
-  public Integer getPage() {
+  public Integer getPages() {
     return pages;
   }
 
-  public void setPage(Integer pages) {
+  public void setPages(Integer pages) {
     Preconditions.checkNotNull(pages, CANNOT_BE_NULL, "Page");
     Preconditions.checkArgument(pages > 0, PAGES_MUST_BE_POSITIVE_NUMBER, Integer.toString(pages));
     this.pages = pages;
