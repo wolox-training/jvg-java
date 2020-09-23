@@ -3,6 +3,8 @@ package wolox.training.security;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -60,6 +62,9 @@ public class CustomAuthenticationProviderTest {
     assertThrows(BadCredentialsException.class,
         ()-> customAuthenticationProvider.authenticate(authentication));
 
+    verify(userRepository,times(1)).findByUsername(authentication.getName());
+    verify(passwordEncoder,times(1)).matches(authentication.getCredentials().toString(), user.getPassword());
+
   }
 
   @Test
@@ -70,6 +75,8 @@ public class CustomAuthenticationProviderTest {
 
     assertThrows(BadCredentialsException.class,
         ()-> customAuthenticationProvider.authenticate(authentication));
+
+    verify(userRepository,times(1)).findByUsername(authentication.getName());
 
   }
 }
