@@ -1,5 +1,7 @@
 package wolox.training.models;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -17,6 +19,7 @@ import wolox.training.exception.BookAlreadyOwnedException;
 
 @Entity
 @Table(name="users")
+@ApiModel(description = "Users to be related with books.")
 public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
@@ -30,6 +33,7 @@ public class User {
   private LocalDate birthdate;
   @ManyToMany()
   @JsonIgnoreProperties(value = "users")
+  @ApiModelProperty(notes= "A book can be in more than one user book collection.")
   private List<Book> books = new ArrayList<>();
 
   public User() {
