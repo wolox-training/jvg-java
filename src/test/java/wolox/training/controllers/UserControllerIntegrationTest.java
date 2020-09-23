@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -45,6 +46,9 @@ public class UserControllerIntegrationTest {
   private final BookFactory bookFactory = new BookFactory();
   private final UserFactory userFactory = new UserFactory();
 
+  private static final String ADD_BOOK_PATH = "/api/users/%s/books/add";
+  private static final String DELETE_BOOK_PATH = "/api/users/%s/books/delete";
+
   @Autowired
   private MockMvc mvc;
 
@@ -65,7 +69,7 @@ public class UserControllerIntegrationTest {
 
 
   @BeforeEach
-  void beforeEachTest(){
+  void beforeEachTest() throws JsonProcessingException {
     book = bookFactory.createTestBook();
     jsonBook = bookFactory.getJsonBook(book);
     user = userFactory.createTestUser();
@@ -146,8 +150,9 @@ public class UserControllerIntegrationTest {
     given(userRepository.findById(user.getUserId())).willReturn(Optional.ofNullable(user));
     given(bookController.findOne(book.getId())).willReturn(book);
     given(userRepository.save(any(User.class))).willReturn(user);
+    String path = String.format(ADD_BOOK_PATH, user.getUserId());
 
-    mvc.perform(put("/api/users/".concat(Long.toString(user.getUserId())).concat("/books/add"))
+    mvc.perform(put(path)
     .contentType(MediaType.APPLICATION_JSON)
     .content(jsonBook))
         .andExpect(jsonPath("$.books", hasSize(1)))
@@ -162,8 +167,9 @@ public class UserControllerIntegrationTest {
     jsonBook = bookFactory.getJsonBook(book);
     given(userRepository.findById(user.getUserId())).willReturn(Optional.ofNullable(user));
     given(bookController.findOne(book.getId())).willThrow(new BookNotFoundException(book.getId()));
+    String path = String.format(DELETE_BOOK_PATH, user.getUserId());
 
-    mvc.perform(delete("/api/users/".concat(Long.toString(user.getUserId())).concat("/books/delete"))
+    mvc.perform(delete(path)
         .contentType(MediaType.APPLICATION_JSON)
         .content(jsonBook))
         .andExpect(status().isNotFound());
