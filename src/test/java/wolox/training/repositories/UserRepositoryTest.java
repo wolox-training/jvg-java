@@ -2,6 +2,7 @@ package wolox.training.repositories;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,6 +51,25 @@ public class UserRepositoryTest {
 
     assertThat(userFound).isPresent();
     assertThat(userFound.get().getName()).isEqualTo(user.getName());
+  }
+
+  @Test
+  public void whenFindAllByBirthdateBetweenAndNameContainingIgnoreCase_thenReturnUsers(){
+    entityManager.persist(user);
+
+    Iterable<User> users = userRepository.findAllByBirthdateBetweenAndNameContainingIgnoreCase(
+        user.getBirthdate(), user.getBirthdate(), user.getName());
+
+    assertThat(users.iterator().next().getName()).isEqualTo(user.getName());
+  }
+
+  @Test
+  public void whenFindAllByBirthdateBetweenAndNameContainingIgnoreCase_thenReturnEmptyList(){
+
+    Iterable<User> users = userRepository.findAllByBirthdateBetweenAndNameContainingIgnoreCase(
+        user.getBirthdate(), user.getBirthdate(), "NotAName");
+
+    assertThat(users.iterator().hasNext()).isFalse();
   }
 
 }

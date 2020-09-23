@@ -3,6 +3,7 @@ package wolox.training.repositories;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -67,5 +68,23 @@ public class BookRepositoryTest {
     Optional<Book> expectedBook = bookRepository.findById(bookSaved.getId());
 
     assertThat(expectedBook).isNotPresent();
+  }
+
+  @Test
+  public void whenFindAllByPublisherAndGenreAndYear_thenReturnABook(){
+    entityManager.persist(book);
+
+    List<Book> books = bookRepository.findAllByPublisherAndGenreAndYear(book.getPublisher(), book.getGenre(), book.getYear());
+
+    assertThat(books.iterator().next().getAuthor()).isEqualTo(book.getAuthor());
+
+  }
+
+  @Test
+
+  public void whenFindAllByPublisherAndGenreAndYear_thenReturnEmpty(){
+    List<Book> books = bookRepository.findAllByPublisherAndGenreAndYear(book.getPublisher(), book.getGenre(), "1");
+
+    assertThat(books.size()).isEqualTo(0);
   }
 }

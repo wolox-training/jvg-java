@@ -175,4 +175,46 @@ public class UserControllerIntegrationTest {
         .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
+
+  @WithMockUser(value = "anUser")
+  @Test
+  public void whenFindUserByBirthdateAndName_thenReturnUsers() throws Exception {
+    List<User> users = new ArrayList<>();
+    users.add(user);
+
+    given(userRepository.findAllByBirthdateBetweenAndNameContainingIgnoreCase(
+          user.getBirthdate().minusDays(2),
+          user.getBirthdate().plusDays(2),
+          user.getName()))
+        .willReturn(users);
+
+    mvc.perform(get("/api/users/find")
+    .contentType(MediaType.APPLICATION_JSON)
+    .queryParam("startDateStr", user.getBirthdate().minusDays(2).toString())
+    .queryParam("endDateStr", user.getBirthdate().plusDays(2).toString())
+    .queryParam("name", user.getName()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(1)))
+        .andExpect(jsonPath("$[0].name").value(user.getName()));
+  }
+
+  @WithMockUser(value = "anUser")
+  @Test
+  public void whenFinduserByBirthdateAndName_thenReturnEmptyList() throws Exception {
+    List<User> users = new ArrayList<>();
+
+    given(userRepository.findAllByBirthdateBetweenAndNameContainingIgnoreCase(
+          user.getBirthdate(),
+          user.getBirthdate(),
+          user.getName()))
+        .willReturn(users);
+
+    mvc.perform(get("/api/users/find")
+        .contentType(MediaType.APPLICATION_JSON)
+        .queryParam("startDateStr", user.getBirthdate().toString())
+        .queryParam("endDateStr", user.getBirthdate().toString())
+        .queryParam("name", user.getName()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(0)));
+  }
 }

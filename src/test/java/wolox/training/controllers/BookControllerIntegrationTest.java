@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,11 +25,13 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import wolox.training.BookFactory;
 import wolox.training.models.Book;
 import wolox.training.repositories.BookRepository;
 import wolox.training.repositories.UserRepository;
 import wolox.training.security.CustomAuthenticationProvider;
+import wolox.training.service.OpenLibraryService;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(BookController.class)
@@ -46,6 +49,9 @@ public class BookControllerIntegrationTest {
 
   @MockBean
   private UserRepository userRepository;
+
+  @MockBean
+  private OpenLibraryService openLibraryService;
 
   @MockBean
   private CustomAuthenticationProvider customAuthenticationProvider;
@@ -143,5 +149,37 @@ public class BookControllerIntegrationTest {
         .andExpect(status().isUnauthorized());
   }
 
+  @WithMockUser(value = "anUser")
+  @Test
+  public void whenFindBooksByQueryParams_thenReturnBooks() throws Exception {
+    List<Book> books = new ArrayList<>();
+    books.add(book);
+    given(bookRepository.findAllByPublisherAndGenreAndYear(book.getPublisher(), book.getGenre(), book.getYear()))
+        .willReturn(books);
 
+    mvc.perform(get("/api/books/find")
+    .contentType(MediaType.APPLICATION_JSON)
+    .queryParam("publisher", book.getPublisher())
+    .queryParam("genre", book.getGenre())
+    .queryParam("year", book.getYear()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(1)))
+        .andExpect(jsonPath("$[0].year").value(book.getYear()));
+  }
+  
+  @WithMockUser(value = "anUser")
+  @Test
+  public void whenFindBooksByQueryParams_thenReturnEmptyList() throws Exception {
+    List<Book> books = new ArrayList<>();
+    given(bookRepository.findAllByPublisherAndGenreAndYear(book.getPublisher(), book.getGenre(), book.getYear()))
+        .willReturn(books);
+
+    mvc.perform(get("/api/books/find")
+        .contentType(MediaType.APPLICATION_JSON)
+        .queryParam("publisher", book.getPublisher())
+        .queryParam("genre", book.getGenre())
+        .queryParam("year", book.getYear()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(0)));
+  }
 }

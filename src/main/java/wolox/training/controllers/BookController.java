@@ -57,6 +57,14 @@ public class BookController {
         .orElseThrow(() -> new BookNotFoundException(id));
   }
 
+  @GetMapping("/find")
+  public Iterable<Book> findByPublisherGenreAndYear(
+      @RequestParam(required=false) String publisher,
+      @RequestParam(required=false) String genre,
+      @RequestParam(required=false) String year){
+    return bookRepository.findAllByPublisherAndGenreAndYear(publisher, genre, year);
+  }
+
   @GetMapping("/isbn/{isbn}")
   public ResponseEntity<Book> findByISBN(@PathVariable String isbn){
     Optional<Book> optBook = bookRepository.findByIsbn(isbn);
