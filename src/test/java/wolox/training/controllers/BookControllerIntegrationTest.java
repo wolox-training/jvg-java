@@ -12,7 +12,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +24,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import wolox.training.BookFactory;
 import wolox.training.models.Book;
 import wolox.training.repositories.BookRepository;
@@ -69,7 +67,8 @@ public class BookControllerIntegrationTest {
     List<Book> books = new ArrayList<>();
     books.add(book);
 
-    given(bookRepository.findAll()).willReturn(books);
+    given(bookRepository.findAllByFilters("","","","","","","",null,""))
+        .willReturn(books);
 
     mvc.perform(get("/api/books")
     .contentType(MediaType.APPLICATION_JSON))
@@ -181,5 +180,31 @@ public class BookControllerIntegrationTest {
         .queryParam("year", book.getYear()))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$", hasSize(0)));
+  }
+
+  @WithMockUser(value="anUser")
+  @Test
+  public void whenFindAllByFilters_thenReturnBooksList() throws Exception {
+    List<Book> books = new ArrayList<>();
+    books.add(book);
+
+    given(bookRepository.findAllByFilters(book.getGenre(),book.getAuthor(),book.getImage(),book.getTitle(),
+        book.getSubtitle(),book.getPublisher(),book.getYear(),book.getPages(),book.getIsbn()))
+        .willReturn(books);
+
+    mvc.perform(get("/api/books")
+        .contentType(MediaType.APPLICATION_JSON)
+        .queryParam("genre",book.getGenre())
+        .queryParam("author", book.getAuthor())
+        .queryParam("image",book.getImage())
+        .queryParam("title",book.getTitle())
+        .queryParam("subtitle",book.getSubtitle())
+        .queryParam("publisher",book.getPublisher())
+        .queryParam("year",book.getYear())
+        .queryParam("pages",book.getPages().toString())
+        .queryParam("isbn",book.getIsbn()))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$", hasSize(1)))
+      .andExpect(jsonPath("$[0].isbn", is(book.getIsbn())));
   }
 }

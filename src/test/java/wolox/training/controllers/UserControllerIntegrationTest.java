@@ -79,7 +79,7 @@ public class UserControllerIntegrationTest {
     List<User> users = new ArrayList<>();
     users.add(user);
 
-    given(userRepository.findAll()).willReturn(users);
+    given(userRepository.findAllByFilters(null,"","")).willReturn(users);
 
     mvc.perform(get("/api/users")
         .contentType(MediaType.APPLICATION_JSON))
@@ -216,5 +216,23 @@ public class UserControllerIntegrationTest {
         .queryParam("name", user.getName()))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$", hasSize(0)));
+  }
+
+  @WithMockUser(value="anUser")
+  @Test
+  public void whenGetAllUsersByFilters_thenReturnUsersList() throws Exception {
+    List<User> users = new ArrayList<>();
+    users.add(user);
+
+    given(userRepository.findAllByFilters(user.getBirthdate(),user.getName(),user.getUsername()))
+        .willReturn(users);
+
+    mvc.perform(get("/api/users")
+        .contentType(MediaType.APPLICATION_JSON)
+        .queryParam("birthdateStr",user.getBirthdate().toString())
+        .queryParam("name",user.getName())
+        .queryParam("username",user.getUsername()))
+        .andExpect(jsonPath("$", hasSize(1)))
+        .andExpect(jsonPath("$[0].username", is(user.getUsername())));
   }
 }
