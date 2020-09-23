@@ -73,9 +73,9 @@ public class UserController {
   public Iterable<User> findByBirthdateAndName(
       @RequestParam(required = false) String startDateStr,
       @RequestParam(required = false) String endDateStr,
-      @RequestParam(required = false) String name){
-    LocalDate startDate = LocalDate.parse(startDateStr);
-    LocalDate endDate = LocalDate.parse(endDateStr);
+      @RequestParam(required = false, defaultValue = "") String name){
+    LocalDate startDate = startDateStr == null ? null : LocalDate.parse(startDateStr);
+    LocalDate endDate = endDateStr == null ? null : LocalDate.parse(endDateStr);
     return userRepository.findAllByBirthdateBetweenAndNameContainingIgnoreCase(startDate, endDate, name);
   }
 
