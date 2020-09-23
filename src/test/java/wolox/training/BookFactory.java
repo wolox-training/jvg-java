@@ -1,8 +1,13 @@
 package wolox.training;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import wolox.training.models.Book;
 
 public class BookFactory {
+
+  ObjectMapper objectMapper = new ObjectMapper();
+
   public BookFactory() {}
 
   public Book createTestBook(){
@@ -19,17 +24,7 @@ public class BookFactory {
     return book;
   }
 
-  public String getJsonBook(Book book){
-    return "{\"genre\": \"" + book.getGenre() + "\"," +
-        "\"author\": \"" + book.getAuthor() + "\"," +
-        "\"image\": \"" + book.getImage() + "\"," +
-        "\"title\": \"" + book.getTitle() + "\"," +
-        "\"subtitle\": \"" + book.getSubtitle() + "\"," +
-        "\"publisher\": \"" + book.getPublisher() + "\"," +
-        "\"year\": \"" + book.getYear() + "\"," +
-        "\"pages\": \"" + book.getPages() + "\"," +
-        "\"isbn\": \"" + book.getIsbn() + "\"," +
-        "\"id\": \"" + book.getId() + "\"" +
-        "}";
+  public String getJsonBook(Book book) throws JsonProcessingException {
+    return objectMapper.writeValueAsString(book);
   }
 }
