@@ -10,6 +10,9 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit4.SpringRunner;
 import wolox.training.UserFactory;
 import wolox.training.models.User;
@@ -26,10 +29,12 @@ public class UserRepositoryTest {
 
   private User user;
   private final UserFactory userFactory = new UserFactory();
+  private Pageable pageable;
 
   @BeforeEach
   void beforeEachTest(){
     user = userFactory.createTestUser();
+    pageable = PageRequest.of(0,4);
   }
 
   @Test
@@ -58,7 +63,7 @@ public class UserRepositoryTest {
     entityManager.persist(user);
 
     Iterable<User> users = userRepository.findAllByBirthdateBetweenAndNameContainingIgnoreCase(
-        user.getBirthdate(), user.getBirthdate(), user.getName());
+        user.getBirthdate(), user.getBirthdate(), user.getName(), pageable);
 
     assertThat(users.iterator().next().getName()).isEqualTo(user.getName());
   }
@@ -67,7 +72,7 @@ public class UserRepositoryTest {
   public void whenFindAllByBirthdateBetweenAndNameContainingIgnoreCase_thenReturnEmptyList(){
 
     Iterable<User> users = userRepository.findAllByBirthdateBetweenAndNameContainingIgnoreCase(
-        user.getBirthdate(), user.getBirthdate(), "NotAName");
+        user.getBirthdate(), user.getBirthdate(), "NotAName", pageable);
 
     assertThat(users.iterator().hasNext()).isFalse();
   }
@@ -77,7 +82,7 @@ public class UserRepositoryTest {
     entityManager.persist(user);
 
     Iterable<User> users = userRepository.findAllByBirthdateBetweenAndNameContainingIgnoreCase(
-        user.getBirthdate(), null, user.getName());
+        user.getBirthdate(), null, user.getName(), pageable);
 
     assertThat(users.iterator().next().getName()).isEqualTo(user.getName());
   }
@@ -87,7 +92,7 @@ public class UserRepositoryTest {
     entityManager.persist(user);
 
     Iterable<User> users = userRepository.findAllByBirthdateBetweenAndNameContainingIgnoreCase(
-        user.getBirthdate(), null, "");
+        user.getBirthdate(), null, "", pageable);
 
     assertThat(users.iterator().next().getName()).isEqualTo(user.getName());
   }
@@ -96,7 +101,7 @@ public class UserRepositoryTest {
   public void whenFindAllByFiltersWithBirthdate_thenReturnBooks() {
     entityManager.persist(user);
 
-    Iterable<User> users = userRepository.findAllByFilters(user.getBirthdate(),"","");
+    Iterable<User> users = userRepository.findAllByFilters(user.getBirthdate(),"","", pageable);
 
     assertThat(users.iterator().next().getName()).isEqualTo(user.getName());
   }
@@ -105,7 +110,7 @@ public class UserRepositoryTest {
   public void whenFindAllByFiltersWithUsername_thenReturnBooks() {
     entityManager.persist(user);
 
-    Iterable<User> users = userRepository.findAllByFilters(null,"",user.getUsername());
+    Iterable<User> users = userRepository.findAllByFilters(null,"",user.getUsername(), pageable);
 
     assertThat(users.iterator().next().getName()).isEqualTo(user.getName());
   }

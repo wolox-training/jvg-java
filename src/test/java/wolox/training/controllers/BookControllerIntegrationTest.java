@@ -20,6 +20,10 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -38,6 +42,7 @@ public class BookControllerIntegrationTest {
   private Book book;
   private String jsonBook;
   private final BookFactory bookFactory = new BookFactory();
+  private Pageable pageable;
 
   @Autowired
   private MockMvc mvc;
@@ -59,6 +64,7 @@ public class BookControllerIntegrationTest {
     book = bookFactory.createTestBook();
     book.setId(1);
     jsonBook = bookFactory.getJsonBook(book);
+    pageable = PageRequest.of(0,20);
   }
 
   @WithMockUser(value="anUser")
@@ -66,15 +72,16 @@ public class BookControllerIntegrationTest {
   public void whenFindAll_thenReturnBooksList() throws Exception {
     List<Book> books = new ArrayList<>();
     books.add(book);
+    Page<Book> booksPage = new PageImpl<>(books);
 
-    given(bookRepository.findAllByFilters("","","","","","","",null,""))
-        .willReturn(books);
+    given(bookRepository.findAllByFilters("","","","","","","",null,"", pageable))
+        .willReturn(booksPage);
 
     mvc.perform(get("/api/books")
     .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(1)))
-        .andExpect(jsonPath("$[0].isbn", is(book.getIsbn())));
+        .andExpect(jsonPath("$.totalElements").value(1))
+        .andExpect(jsonPath("$.content[0].isbn").value(book.getIsbn()));
   }
 
   @WithMockUser(value="anUser")
@@ -153,8 +160,9 @@ public class BookControllerIntegrationTest {
   public void whenFindBooksByQueryParams_thenReturnBooks() throws Exception {
     List<Book> books = new ArrayList<>();
     books.add(book);
-    given(bookRepository.findAllByPublisherAndGenreAndYear(book.getPublisher(), book.getGenre(), book.getYear()))
-        .willReturn(books);
+    Page<Book> booksPage = new PageImpl<>(books);
+    given(bookRepository.findAllByPublisherAndGenreAndYear(book.getPublisher(), book.getGenre(), book.getYear(), pageable))
+        .willReturn(booksPage);
 
     mvc.perform(get("/api/books/find")
     .contentType(MediaType.APPLICATION_JSON)
@@ -162,16 +170,17 @@ public class BookControllerIntegrationTest {
     .queryParam("genre", book.getGenre())
     .queryParam("year", book.getYear()))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(1)))
-        .andExpect(jsonPath("$[0].year").value(book.getYear()));
+        .andExpect(jsonPath("$.totalElements").value(1))
+        .andExpect(jsonPath("$.content[0].year").value(book.getYear()));
   }
   
   @WithMockUser(value = "anUser")
   @Test
   public void whenFindBooksByQueryParams_thenReturnEmptyList() throws Exception {
     List<Book> books = new ArrayList<>();
-    given(bookRepository.findAllByPublisherAndGenreAndYear(book.getPublisher(), book.getGenre(), book.getYear()))
-        .willReturn(books);
+    Page<Book> booksPage = new PageImpl<>(books);
+    given(bookRepository.findAllByPublisherAndGenreAndYear(book.getPublisher(), book.getGenre(), book.getYear(), pageable))
+        .willReturn(booksPage);
 
     mvc.perform(get("/api/books/find")
         .contentType(MediaType.APPLICATION_JSON)
@@ -179,7 +188,7 @@ public class BookControllerIntegrationTest {
         .queryParam("genre", book.getGenre())
         .queryParam("year", book.getYear()))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(0)));
+        .andExpect(jsonPath("$.totalElements").value(0));
   }
 
   @WithMockUser(value="anUser")
@@ -187,10 +196,11 @@ public class BookControllerIntegrationTest {
   public void whenFindAllByFilters_thenReturnBooksList() throws Exception {
     List<Book> books = new ArrayList<>();
     books.add(book);
+    Page<Book> booksPage = new PageImpl<>(books);
 
     given(bookRepository.findAllByFilters(book.getGenre(),book.getAuthor(),book.getImage(),book.getTitle(),
-        book.getSubtitle(),book.getPublisher(),book.getYear(),book.getPages(),book.getIsbn()))
-        .willReturn(books);
+        book.getSubtitle(),book.getPublisher(),book.getYear(),book.getPages(),book.getIsbn(), pageable))
+        .willReturn(booksPage);
 
     mvc.perform(get("/api/books")
         .contentType(MediaType.APPLICATION_JSON)
@@ -204,7 +214,7 @@ public class BookControllerIntegrationTest {
         .queryParam("pages",book.getPages().toString())
         .queryParam("isbn",book.getIsbn()))
       .andExpect(status().isOk())
-      .andExpect(jsonPath("$", hasSize(1)))
-      .andExpect(jsonPath("$[0].isbn", is(book.getIsbn())));
+      .andExpect(jsonPath("$.totalElements").value(1))
+      .andExpect(jsonPath("$.content[0].isbn", is(book.getIsbn())));
   }
 }

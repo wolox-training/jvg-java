@@ -20,10 +20,13 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import wolox.training.BookFactory;
 import wolox.training.UserFactory;
@@ -34,7 +37,6 @@ import wolox.training.repositories.BookRepository;
 import wolox.training.repositories.UserRepository;
 import wolox.training.security.CustomAuthenticationProvider;
 
-@RunWith(SpringRunner.class)
 @WebMvcTest(UserController.class)
 public class UserControllerIntegrationTest {
 
@@ -42,6 +44,7 @@ public class UserControllerIntegrationTest {
   private String jsonUser;
   private Book book;
   private String jsonBook;
+  private Pageable pageable;
   private final BookFactory bookFactory = new BookFactory();
   private final UserFactory userFactory = new UserFactory();
 
@@ -71,6 +74,7 @@ public class UserControllerIntegrationTest {
     user = userFactory.createTestUser();
     user.setUserId(1);
     jsonUser = userFactory.getJsonUser(user);
+    pageable = PageRequest.of(0,20);
   }
 
   @WithMockUser(value="anUser")
@@ -78,13 +82,14 @@ public class UserControllerIntegrationTest {
   public void whenGetAllUsers_thenReturnUsersList() throws Exception {
     List<User> users = new ArrayList<>();
     users.add(user);
+    Page<User> usersPage = new PageImpl<>(users);
 
-    given(userRepository.findAllByFilters(null,"","")).willReturn(users);
+    given(userRepository.findAllByFilters(null,"","",pageable)).willReturn(usersPage);
 
     mvc.perform(get("/api/users")
         .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$", hasSize(1)))
-        .andExpect(jsonPath("$[0].username", is(user.getUsername())));
+        .andExpect(jsonPath("$.totalElements").value(1))
+        .andExpect(jsonPath("$.content[0].username").value(user.getUsername()));
   }
 
   @WithMockUser(value="anUser")
@@ -181,12 +186,14 @@ public class UserControllerIntegrationTest {
   public void whenFindUserByBirthdateAndName_thenReturnUsers() throws Exception {
     List<User> users = new ArrayList<>();
     users.add(user);
+    Page<User> usersPage = new PageImpl<>(users);
 
     given(userRepository.findAllByBirthdateBetweenAndNameContainingIgnoreCase(
           user.getBirthdate().minusDays(2),
           user.getBirthdate().plusDays(2),
-          user.getName()))
-        .willReturn(users);
+          user.getName(),
+          pageable))
+        .willReturn(usersPage);
 
     mvc.perform(get("/api/users/find")
     .contentType(MediaType.APPLICATION_JSON)
@@ -194,20 +201,22 @@ public class UserControllerIntegrationTest {
     .queryParam("endDateStr", user.getBirthdate().plusDays(2).toString())
     .queryParam("name", user.getName()))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(1)))
-        .andExpect(jsonPath("$[0].name").value(user.getName()));
+        .andExpect(jsonPath("$.totalElements").value(1))
+        .andExpect(jsonPath("$.content[0].name").value(user.getName()));
   }
 
   @WithMockUser(value = "anUser")
   @Test
   public void whenFinduserByBirthdateAndName_thenReturnEmptyList() throws Exception {
     List<User> users = new ArrayList<>();
+    Page<User> usersPage = new PageImpl<>(users);
 
     given(userRepository.findAllByBirthdateBetweenAndNameContainingIgnoreCase(
           user.getBirthdate(),
           user.getBirthdate(),
-          user.getName()))
-        .willReturn(users);
+          user.getName(),
+          pageable))
+        .willReturn(usersPage);
 
     mvc.perform(get("/api/users/find")
         .contentType(MediaType.APPLICATION_JSON)
@@ -215,7 +224,7 @@ public class UserControllerIntegrationTest {
         .queryParam("endDateStr", user.getBirthdate().toString())
         .queryParam("name", user.getName()))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(0)));
+        .andExpect(jsonPath("$.totalElements").value(0));
   }
 
   @WithMockUser(value="anUser")
@@ -223,16 +232,17 @@ public class UserControllerIntegrationTest {
   public void whenGetAllUsersByFilters_thenReturnUsersList() throws Exception {
     List<User> users = new ArrayList<>();
     users.add(user);
+    Page<User> usersPage = new PageImpl<>(users);
 
-    given(userRepository.findAllByFilters(user.getBirthdate(),user.getName(),user.getUsername()))
-        .willReturn(users);
+    given(userRepository.findAllByFilters(user.getBirthdate(),user.getName(),user.getUsername(), pageable))
+        .willReturn(usersPage);
 
     mvc.perform(get("/api/users")
         .contentType(MediaType.APPLICATION_JSON)
         .queryParam("birthdateStr",user.getBirthdate().toString())
         .queryParam("name",user.getName())
         .queryParam("username",user.getUsername()))
-        .andExpect(jsonPath("$", hasSize(1)))
-        .andExpect(jsonPath("$[0].username", is(user.getUsername())));
+        .andExpect(jsonPath("$.totalElements").value(1))
+        .andExpect(jsonPath("$.content[0].username").value(user.getUsername()));
   }
 }

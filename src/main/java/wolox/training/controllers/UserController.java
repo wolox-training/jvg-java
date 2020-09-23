@@ -11,6 +11,8 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -51,12 +53,13 @@ public class UserController {
   }
 
   @GetMapping
-  public Iterable<User> getAll(
+  public Page<User> getAll(
       @RequestParam(required=false) String birthdateStr,
       @RequestParam(required=false, defaultValue = "") String name,
-      @RequestParam(required=false, defaultValue = "") String username){
+      @RequestParam(required=false, defaultValue = "") String username,
+      Pageable pageable){
     LocalDate birthdate = birthdateStr == null ? null : LocalDate.parse(birthdateStr);
-    return userRepository.findAllByFilters(birthdate, name, username);
+    return userRepository.findAllByFilters(birthdate, name, username, pageable);
   }
 
   @GetMapping("/{userId}")
@@ -74,13 +77,14 @@ public class UserController {
   }
 
   @GetMapping("/find")
-  public Iterable<User> findByBirthdateAndName(
+  public Page<User> findByBirthdateAndName(
       @RequestParam(required = false) String startDateStr,
       @RequestParam(required = false) String endDateStr,
-      @RequestParam(required = false, defaultValue = "") String name){
+      @RequestParam(required = false, defaultValue = "") String name,
+      Pageable pageable){
     LocalDate startDate = startDateStr == null ? null : LocalDate.parse(startDateStr);
     LocalDate endDate = endDateStr == null ? null : LocalDate.parse(endDateStr);
-    return userRepository.findAllByBirthdateBetweenAndNameContainingIgnoreCase(startDate, endDate, name);
+    return userRepository.findAllByBirthdateBetweenAndNameContainingIgnoreCase(startDate, endDate, name, pageable);
   }
 
   @PostMapping
