@@ -1,10 +1,8 @@
 package wolox.training.models;
 
 import static wolox.training.constants.PreconditionsConstants.CANNOT_BE_EMPTY;
-import static wolox.training.constants.PreconditionsConstants.CANNOT_BE_NULL;
 import static wolox.training.constants.PreconditionsConstants.UNBORN;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Preconditions;
 import io.swagger.annotations.ApiModel;
@@ -22,11 +20,17 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import wolox.training.exception.BookAlreadyOwnedException;
 
 @Entity
 @Table(name="users")
 @ApiModel(description = "Users to be related with books.")
+@NoArgsConstructor
+@Getter
+@NonNull
 public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
@@ -46,44 +50,21 @@ public class User {
   @JsonIgnoreProperties(value = "users")
   private List<Book> books = new ArrayList<>();
 
-  public User() {
-  }
-
-  public long getUserId() {
-    return userId;
-  }
-
   public void setUserId(long userId) {
-    Preconditions.checkNotNull(userId,CANNOT_BE_NULL,"UserID");
     this.userId = userId;
   }
 
-  public String getUsername() {
-    return username;
-  }
-
   public void setUsername(String username) {
-    Preconditions.checkNotNull(username, CANNOT_BE_NULL, "Username");
     Preconditions.checkArgument(!username.isEmpty(), CANNOT_BE_EMPTY, "Username");
     this.username = username;
   }
 
-  public String getName() {
-    return name;
-  }
-
   public void setName(String name) {
-    Preconditions.checkNotNull(name, CANNOT_BE_NULL, "Name");
     Preconditions.checkArgument(!name.isEmpty(), CANNOT_BE_EMPTY, "Name");
     this.name = name;
   }
 
-  public LocalDate getBirthdate() {
-    return birthdate;
-  }
-
   public void setBirthdate(LocalDate birthdate) {
-    Preconditions.checkNotNull(birthdate, CANNOT_BE_NULL, "Birthdate");
     Preconditions.checkArgument(birthdate.isBefore(LocalDate.now()), UNBORN, birthdate.toString());
     this.birthdate = birthdate;
   }
@@ -93,7 +74,6 @@ public class User {
   }
 
   public void setBooks(List<Book> books) {
-    Preconditions.checkNotNull(books, CANNOT_BE_NULL, "Books");
     this.books = books;
   }
 
@@ -108,11 +88,6 @@ public class User {
     this.setBooks(this.books.stream()
         .filter(bookInList -> bookInList.getId() != book.getId())
         .collect(Collectors.toList()));
-  }
-
-
-  public String getPassword() {
-    return password;
   }
 
   public void setPassword(String password) {

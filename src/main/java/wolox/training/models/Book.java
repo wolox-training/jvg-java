@@ -1,7 +1,6 @@
 package wolox.training.models;
 
 import static wolox.training.constants.PreconditionsConstants.CANNOT_BE_EMPTY;
-import static wolox.training.constants.PreconditionsConstants.CANNOT_BE_NULL;
 import static wolox.training.constants.PreconditionsConstants.INVALID_YEAR;
 import static wolox.training.constants.PreconditionsConstants.PAGES_MUST_BE_POSITIVE_NUMBER;
 
@@ -16,140 +15,97 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @Entity
+@NoArgsConstructor
+@Getter
 public class Book {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
+  @NonNull
   private long id;
   private String genre;
   @Column(nullable = false)
+  @NonNull
   private String author;
   @Column(nullable = false)
+  @NonNull
   private String image;
   @Column(nullable = false)
+  @NonNull
   private String title;
   @Column(nullable = false)
+  @NonNull
   private String subtitle;
   @Column(nullable = false)
+  @NonNull
   private String publisher;
   @Column(nullable = false)
+  @NonNull
   private String year;
   @Column(nullable = false)
+  @NonNull
   private Integer pages;
   @Column(nullable = false)
+  @NonNull
   private String isbn;
   @ManyToMany(mappedBy = "books")
   @JsonIgnoreProperties(value = "books")
   private List<User> users = new ArrayList<>();
 
-  public Book() {
-  }
-
-  public long getId() {
-    return id;
-  }
-
   public void setId(long id) {
-    Preconditions.checkNotNull(id, CANNOT_BE_NULL, "Book ID");
     this.id = id;
-  }
-
-  public String getGenre() {
-    return genre;
   }
 
   public void setGenre(String genre) {
     this.genre = genre;
   }
 
-  public String getAuthor() {
-    return author;
-  }
-
   public void setAuthor(String author) {
-    Preconditions.checkNotNull(author, CANNOT_BE_NULL, "Author");
     Preconditions.checkArgument(!author.isEmpty(), CANNOT_BE_EMPTY, "Author");
     this.author = author;
   }
 
-  public String getImage() {
-    return image;
-  }
-
   public void setImage(String image) {
-    Preconditions.checkNotNull(image, CANNOT_BE_NULL, "Image");
     Preconditions.checkArgument(!image.isEmpty(), CANNOT_BE_EMPTY, "Image");
     this.image = image;
   }
 
-  public String getTitle() {
-    return title;
-  }
-
   public void setTitle(String title) {
-    Preconditions.checkNotNull(title, CANNOT_BE_NULL, "Title");
     Preconditions.checkArgument(!title.isEmpty(), CANNOT_BE_EMPTY, "Title");
     this.title = title;
   }
 
-  public String getSubtitle() {
-    return subtitle;
-  }
-
   public void setSubtitle(String subtitle) {
-    Preconditions.checkNotNull(subtitle, CANNOT_BE_NULL, "Subtitle");
     Preconditions.checkArgument(!subtitle.isEmpty(), CANNOT_BE_EMPTY, "Subtitle");
     this.subtitle = subtitle;
   }
 
-  public String getPublisher() {
-    return publisher;
-  }
-
   public void setPublisher(String publisher) {
-    Preconditions.checkNotNull(publisher, CANNOT_BE_NULL, "Publisher");
     Preconditions.checkArgument(!publisher.isEmpty(), CANNOT_BE_EMPTY, "Publisher");
     this.publisher = publisher;
   }
 
-  public String getYear() {
-    return year;
-  }
-
   public void setYear(String year) {
-    Preconditions.checkNotNull(year, CANNOT_BE_NULL, "Year");
     Preconditions.checkArgument(!year.isEmpty(), CANNOT_BE_EMPTY, "Year");
     Preconditions.checkArgument(Integer.parseInt(year) <= LocalDate.now().getYear() && Integer.parseInt(year) > 0, INVALID_YEAR);
     this.year = year;
   }
 
-  public Integer getPages() {
-    return pages;
-  }
-
   public void setPages(Integer page) {
-    Preconditions.checkNotNull(page, CANNOT_BE_NULL, "Page");
     Preconditions.checkArgument(page > 0, PAGES_MUST_BE_POSITIVE_NUMBER, Integer.toString(page));
     this.pages = page;
   }
 
-  public String getIsbn() {
-    return isbn;
-  }
-
   public void setIsbn(String isbn) {
-    Preconditions.checkNotNull(isbn, CANNOT_BE_NULL, "ISBN");
     Preconditions.checkArgument(!isbn.isEmpty(), CANNOT_BE_EMPTY, "ISBN");
     this.isbn = isbn;
   }
 
-  public List<User> getUsers() {
-    return users;
-  }
-
   public void setUsers(List<User> users) {
-    Preconditions.checkNotNull(users, CANNOT_BE_NULL,"Users");
     this.users = users;
   }
 }
