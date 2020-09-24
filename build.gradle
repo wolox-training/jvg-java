@@ -30,6 +30,7 @@ dependencies {
 	}
 	testCompile('com.h2database:h2')
 	testCompile('junit:junit:4.12')
+	testCompile('com.github.tomakehurst:wiremock:2.25.1')
 }
 
 test {
