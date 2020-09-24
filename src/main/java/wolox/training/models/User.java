@@ -14,10 +14,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import lombok.Getter;
@@ -28,6 +33,9 @@ import wolox.training.exception.BookAlreadyOwnedException;
 @Entity
 @Table(name="users")
 @ApiModel(description = "Users to be related with books.")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name="user_type", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorValue(value = "user")
 @NoArgsConstructor
 @Getter
 @NonNull
@@ -49,6 +57,8 @@ public class User {
   @ApiModelProperty(notes= "A book can be in more than one user book collection.")
   @JsonIgnoreProperties(value = "users")
   private List<Book> books = new ArrayList<>();
+  @Column(name="user_type", insertable = false, updatable = false)
+  private String user_type;
 
   public void setUserId(long userId) {
     this.userId = userId;
