@@ -11,6 +11,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,6 +40,13 @@ public class UserController {
 
   @Autowired
   PasswordEncoder passwordEncoder;
+
+  @GetMapping("/logged")
+  public User getActualUser(Authentication authentication){
+    return userRepository.findByUsername(authentication.getName())
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+            String.format(USER_WAS_NOT_FOUND_USERNAME, authentication.getName())));
+  }
 
   @GetMapping
   public Iterable<User> getAll(){
