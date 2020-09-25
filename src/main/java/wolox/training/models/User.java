@@ -58,7 +58,8 @@ public class User {
   @JsonIgnoreProperties(value = "users")
   private List<Book> books = new ArrayList<>();
   @Column(name="user_type", insertable = false, updatable = false)
-  private String user_type;
+  @JsonProperty("user_type")
+  private String userType;
 
   public void setUserId(long userId) {
     this.userId = userId;
