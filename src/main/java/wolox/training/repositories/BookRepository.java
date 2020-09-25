@@ -21,4 +21,25 @@ public interface BookRepository extends JpaRepository<Book, Long> {
       @Param("publisher") String publisher,
       @Param("genre") String genre,
       @Param("year") String year);
+
+  @Query("SELECT b FROM Book b"
+      + " WHERE (:genre = '' OR UPPER(b.genre) LIKE UPPER(CONCAT('%',:genre,'%')))"
+      + " AND (:author = '' OR UPPER(b.author) LIKE UPPER(CONCAT('%',:author,'%')))"
+      + " AND (:image = '' OR UPPER(b.image) LIKE UPPER(CONCAT('%',:image,'%')))"
+      + " AND (:title = '' OR UPPER(b.title) LIKE UPPER(CONCAT('%',:title,'%')))"
+      + " AND (:subtitle = '' OR UPPER(b.subtitle) LIKE UPPER(CONCAT('%',:subtitle,'%')))"
+      + " AND (:publisher = '' OR UPPER(b.publisher) LIKE UPPER(CONCAT('%',:publisher,'%')))"
+      + " AND (:year = '' OR UPPER(b.year) LIKE UPPER(CONCAT('%',:year,'%')))"
+      + " AND (:pages is null OR b.pages = :pages)"
+      + " AND (:isbn = '' OR UPPER(b.isbn) LIKE UPPER(CONCAT('%',:isbn,'%')))")
+  Iterable<Book> findAllByFilters(
+      @Param("genre") String genre,
+      @Param("author") String author,
+      @Param("image") String image,
+      @Param("title") String title,
+      @Param("subtitle") String subtitle,
+      @Param("publisher") String publisher,
+      @Param("year") String year,
+      @Param("pages") Integer pages,
+      @Param("isbn") String isbn);
 }

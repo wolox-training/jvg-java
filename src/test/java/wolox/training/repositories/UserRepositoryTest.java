@@ -92,4 +92,22 @@ public class UserRepositoryTest {
     assertThat(users.iterator().next().getName()).isEqualTo(user.getName());
   }
 
+  @Test
+  public void whenFindAllByFiltersWithBirthdate_thenReturnBooks() {
+    entityManager.persist(user);
+
+    Iterable<User> users = userRepository.findAllByFilters(user.getBirthdate(),"","");
+
+    assertThat(users.iterator().next().getName()).isEqualTo(user.getName());
+  }
+
+  @Test
+  public void whenFindAllByFiltersWithUsername_thenReturnBooks() {
+    entityManager.persist(user);
+
+    Iterable<User> users = userRepository.findAllByFilters(null,"",user.getUsername());
+
+    assertThat(users.iterator().next().getName()).isEqualTo(user.getName());
+  }
+
 }

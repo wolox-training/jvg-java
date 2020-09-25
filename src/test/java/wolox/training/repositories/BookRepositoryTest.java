@@ -106,4 +106,26 @@ public class BookRepositoryTest {
     assertThat(books.iterator().next().getAuthor()).isEqualTo(book.getAuthor());
 
   }
+
+  @Test
+  public void whenFindAllByFiltersWithYear_thenReturnABook(){
+    entityManager.persist(book);
+
+    Iterable<Book> books = bookRepository.findAllByFilters("","","","","","",book.getYear(),null,"");
+
+    assertThat(books.iterator().next().getAuthor()).isEqualTo(book.getAuthor());
+
+  }
+
+  @Test
+  public void whenFindAllByFiltersWithPages_thenReturnABook(){
+    entityManager.persist(book);
+
+    Iterable<Book> books = bookRepository.findAllByFilters("","","","","","","",book.getPages(),"");
+
+    assertThat(books.iterator().next().getAuthor()).isEqualTo(book.getAuthor());
+
+  }
+
+
 }
