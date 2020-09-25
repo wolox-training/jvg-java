@@ -6,8 +6,8 @@ import static wolox.training.constants.PreconditionsConstants.INVALID_YEAR;
 import static wolox.training.constants.PreconditionsConstants.PAGES_MUST_BE_POSITIVE_NUMBER;
 
 import com.google.common.base.Preconditions;
-import java.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
@@ -128,10 +128,10 @@ public class Book {
     return pages;
   }
 
-  public void setPages(Integer pages) {
-    Preconditions.checkNotNull(pages, CANNOT_BE_NULL, "Page");
-    Preconditions.checkArgument(pages > 0, PAGES_MUST_BE_POSITIVE_NUMBER, Integer.toString(pages));
-    this.pages = pages;
+  public void setPages(Integer page) {
+    Preconditions.checkNotNull(page, CANNOT_BE_NULL, "Page");
+    Preconditions.checkArgument(page > 0, PAGES_MUST_BE_POSITIVE_NUMBER, Integer.toString(page));
+    this.pages = page;
   }
 
   public String getIsbn() {

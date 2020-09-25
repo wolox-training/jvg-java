@@ -37,8 +37,8 @@ public class User {
   @Column(nullable = false)
   private LocalDate birthdate;
   @ManyToMany()
-  @JsonIgnoreProperties(value = "users")
   @ApiModelProperty(notes= "A book can be in more than one user book collection.")
+  @JsonIgnoreProperties(value = "users")
   private List<Book> books = new ArrayList<>();
 
   public User() {
