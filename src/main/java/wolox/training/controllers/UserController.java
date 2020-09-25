@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import java.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -65,6 +67,16 @@ public class UserController {
     return userRepository.findByUsername(username)
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
             String.format(USER_WAS_NOT_FOUND_USERNAME,username)));
+  }
+
+  @GetMapping("/find")
+  public Iterable<User> findByBirthdateAndName(
+      @RequestParam String startDateStr,
+      @RequestParam String endDateStr,
+      @RequestParam String name){
+    LocalDate startDate = LocalDate.parse(startDateStr);
+    LocalDate endDate = LocalDate.parse(endDateStr);
+    return userRepository.findAllByBirthdateBetweenAndNameContainingIgnoreCase(startDate, endDate, name);
   }
 
   @PostMapping
