@@ -22,12 +22,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import wolox.training.BookFactory;
 import wolox.training.models.Book;
 import wolox.training.repositories.BookRepository;
 import wolox.training.repositories.UserRepository;
+import wolox.training.security.CustomAuthenticationProvider;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(BookController.class)
@@ -46,6 +48,9 @@ public class BookControllerIntegrationTest {
   @MockBean
   private UserRepository userRepository;
 
+  @MockBean
+  private CustomAuthenticationProvider customAuthenticationProvider;
+
   @BeforeEach
   void beforeEachTest() throws JsonProcessingException {
     book = bookFactory.createTestBook();
@@ -53,6 +58,7 @@ public class BookControllerIntegrationTest {
     jsonBook = bookFactory.getJsonBook(book);
   }
 
+  @WithMockUser(value="anUser")
   @Test
   public void whenFindAll_thenReturnBooksList() throws Exception {
     List<Book> books = new ArrayList<>();
@@ -60,13 +66,14 @@ public class BookControllerIntegrationTest {
 
     given(bookRepository.findAll()).willReturn(books);
 
-    mvc.perform(get("/api/books/")
+    mvc.perform(get("/api/books")
     .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$", hasSize(1)))
         .andExpect(jsonPath("$[0].isbn", is(book.getIsbn())));
   }
 
+  @WithMockUser(value="anUser")
   @Test
   public void whenFindBookById_thenReturnAnExistingBook() throws Exception {
 
@@ -78,6 +85,7 @@ public class BookControllerIntegrationTest {
         .andExpect(jsonPath("$.isbn").value(book.getIsbn()));
   }
 
+  @WithMockUser(value="anUser")
   @Test
   public void whenFindBookByAuthorAndDoesntExists_thenReturnNotFoundException() throws Exception {
     String author = "unknown";
@@ -91,13 +99,14 @@ public class BookControllerIntegrationTest {
   public void whenCreateBook_thenReturnBookCreated() throws  Exception {
     given(bookRepository.save(any(Book.class))).willReturn(book);
 
-    mvc.perform(post("/api/books/")
+    mvc.perform(post("/api/books")
         .contentType(MediaType.APPLICATION_JSON)
         .content(jsonBook))
         .andExpect(status().isCreated());
 
   }
 
+  @WithMockUser(value="anUser")
   @Test
   public void whenDeleteBookThatDoesNotExists_thenReturnNotFoundException() throws Exception {
     given(bookRepository.findById(book.getId())).willReturn(Optional.empty());
@@ -107,6 +116,7 @@ public class BookControllerIntegrationTest {
         .andExpect(status().isNotFound());
   }
 
+  @WithMockUser(value="anUser")
   @Test
   public void whenUpdateBookAndIdsDoesNotMatch_thenReturnMismatchException() throws Exception {
     mvc.perform(put("/api/books/2")
@@ -115,6 +125,7 @@ public class BookControllerIntegrationTest {
         .andExpect(status().isUnprocessableEntity());
   }
 
+  @WithMockUser(value="anUser")
   @Test
   public void whenUpdateBook_thenReturnUpdatedBook() throws Exception {
     given(bookRepository.findById(book.getId())).willReturn(Optional.ofNullable(book));
@@ -124,6 +135,13 @@ public class BookControllerIntegrationTest {
         .content(jsonBook))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.isbn").value(book.getIsbn()));
+  }
+
+  @Test
+  public void whenGetAllBookWithoutAuth_thenReturnUnauthorizedException() throws Exception {
+    mvc.perform(get("/api/books")
+        .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isUnauthorized());
   }
 
 

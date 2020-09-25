@@ -4,6 +4,8 @@ import static wolox.training.constants.PreconditionsConstants.CANNOT_BE_EMPTY;
 import static wolox.training.constants.PreconditionsConstants.CANNOT_BE_NULL;
 import static wolox.training.constants.PreconditionsConstants.UNBORN;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Preconditions;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -30,12 +32,15 @@ public class User {
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name="id")
   private long userId;
-  @Column(nullable = false)
+  @Column(nullable = false, unique = true)
   private String username;
   @Column(nullable = false)
   private String name;
   @Column(nullable = false)
   private LocalDate birthdate;
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+  @Column(nullable = false)
+  private String password;
   @ManyToMany()
   @ApiModelProperty(notes= "A book can be in more than one user book collection.")
   @JsonIgnoreProperties(value = "users")
@@ -103,5 +108,14 @@ public class User {
     this.setBooks(this.books.stream()
         .filter(bookInList -> bookInList.getId() != book.getId())
         .collect(Collectors.toList()));
+  }
+
+
+  public String getPassword() {
+    return password;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
   }
 }

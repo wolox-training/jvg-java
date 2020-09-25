@@ -11,6 +11,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,6 +37,9 @@ public class UserController {
   @Autowired
   BookController bookController;
 
+  @Autowired
+  PasswordEncoder passwordEncoder;
+
   @GetMapping
   public Iterable<User> getAll(){
     return userRepository.findAll();
@@ -58,6 +62,7 @@ public class UserController {
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public User create(@RequestBody User user) {
+    user.setPassword(passwordEncoder.encode(user.getPassword()));
     return userRepository.save(user);
   }
 
@@ -73,7 +78,8 @@ public class UserController {
       throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED,
           String.format(USER_ID_DOES_NOT_MATCH_WITH_ID_PROVIDED,user.getUserId(), userId));
     }
-    findById(userId);
+    User userDB = findById(userId);
+    user.setPassword(userDB.getPassword());
     return userRepository.save(user);
   }
 
