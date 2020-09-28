@@ -3,6 +3,7 @@ package wolox.training.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Objects;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +47,7 @@ public class OpenLibraryService {
         .queryParam("jscmd","data")
         .toUriString();
     ResponseEntity<String> apiResponse = restTemplate.getForEntity(uri, String.class);
-    return apiResponse.hasBody() ?
+    return !Objects.equals(apiResponse.getBody(), "{}") ?
         objectMapper.readTree(apiResponse.getBody()).get("ISBN:".concat(isbn)) :
         objectMapper.createObjectNode();
   }
