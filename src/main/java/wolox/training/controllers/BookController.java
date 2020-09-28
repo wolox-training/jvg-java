@@ -5,6 +5,8 @@ import static wolox.training.constants.ExceptionConstants.BOOK_WAS_NOT_FOUND_ISB
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -41,7 +43,7 @@ public class BookController {
   }
 
   @GetMapping
-  public Iterable<Book> findAll(
+  public Page<Book> findAll(
       @RequestParam(required=false, defaultValue = "") String genre,
       @RequestParam(required=false, defaultValue = "") String author,
       @RequestParam(required=false, defaultValue = "") String image,
@@ -50,9 +52,10 @@ public class BookController {
       @RequestParam(required=false, defaultValue = "") String publisher,
       @RequestParam(required=false, defaultValue = "") String year,
       @RequestParam(required=false, defaultValue = "") String pages,
-      @RequestParam(required=false, defaultValue = "") String isbn){
+      @RequestParam(required=false, defaultValue = "") String isbn,
+      Pageable pageable){
     Integer pagesInt = pages.isEmpty() ? null : Integer.parseInt(pages);
-    return bookRepository.findAllByFilters(genre, author, image, title, subtitle, publisher, year, pagesInt, isbn);
+    return bookRepository.findAllByFilters(genre, author, image, title, subtitle, publisher, year, pagesInt, isbn, pageable);
   }
 
   @GetMapping("/author/{author}")
@@ -68,11 +71,12 @@ public class BookController {
   }
 
   @GetMapping("/find")
-  public Iterable<Book> findByPublisherGenreAndYear(
+  public Page<Book> findByPublisherGenreAndYear(
       @RequestParam(required = false) String publisher,
       @RequestParam(required = false) String genre,
-      @RequestParam(required = false) String year){
-    return bookRepository.findAllByPublisherAndGenreAndYear(publisher, genre, year);
+      @RequestParam(required = false) String year,
+      Pageable pageable){
+    return bookRepository.findAllByPublisherAndGenreAndYear(publisher, genre, year, pageable);
   }
 
   @GetMapping("/isbn/{isbn}")
