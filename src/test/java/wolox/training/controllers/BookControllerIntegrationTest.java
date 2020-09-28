@@ -19,6 +19,7 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -70,7 +71,7 @@ public class BookControllerIntegrationTest {
   private CustomAuthenticationProvider customAuthenticationProvider;
 
   @BeforeEach
-  void beforeEachTest(){
+  void beforeEachTest() throws JsonProcessingException {
     book = bookFactory.createTestBook();
     book.setId(1);
     jsonBook = bookFactory.getJsonBook(book);
